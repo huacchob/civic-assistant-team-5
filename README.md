@@ -157,6 +157,7 @@ This repository is organized to support **containerized agents** and **MCP serve
 ### 1. Environment Setup
 
 Create a `.env` file with your API keys:
+
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
 SUPABASE_URL=your_supabase_url_here
@@ -198,13 +199,13 @@ make stop
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `make start` | Start MAREA application |
-| `make stop` | Stop MAREA application |
-| `make logs` | Show container logs |
-| `make test-planner` | Run planner agent test |
-| `make clean` | Clean up files |
+| Command             | Description             |
+| ------------------- | ----------------------- |
+| `make start`        | Start MAREA application |
+| `make stop`         | Stop MAREA application  |
+| `make logs`         | Show container logs     |
+| `make test-planner` | Run planner agent test  |
+| `make clean`        | Clean up files          |
 
 ---
 
