@@ -108,7 +108,7 @@ This repository is organized to support **containerized agents** and **MCP serve
 ```text
 .
 ├── README.md
-├── app.py                   # Main application entry point
+├── gradio_app.py            # Main web application (FastAPI + Gradio)
 ├── docker-compose.yml       # Multi-container orchestration
 ├── Dockerfile               # Main application container
 ├── Makefile                 # Build and run commands

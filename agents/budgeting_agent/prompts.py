@@ -1,4 +1,6 @@
-"""Prompts for the Planner Agent workflow."""
+"""Prompts for the Budgeting Agent workflow."""
+
+# No prompts needed - this agent only calls tools and stores raw results
 
 
 def get_budget_calculation_prompt(income: float, budget_result: dict) -> str:
