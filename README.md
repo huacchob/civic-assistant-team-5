@@ -164,6 +164,27 @@ Create a `.env` file with your API keys:
 OPENAI_API_KEY=your_openai_api_key_here
 SUPABASE_URL=your_supabase_url_here
 SUPABASE_KEY=your_supabase_anon_key_here
+WEATHER_API_KEY=your_weather_api_key
+GNEWS_API_KEY=your_gnews_api_key
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=your_langsmith_project_name
+# Supabase Database Configuration
+POSTGRES_DB=postgres
+POSTGRES_USER=postgres_user
+POSTGRES_PASSWORD=postgres_pass
+POSTGRES_HOST=postgres_host
+POSTGRES_PORT=postgres_port
+# Full database URL for libraries to use (with SSL required)
+DATABASE_URL=db_url
+# Supabase MCP Server Configuration
+SUPABASE_ACCESS_TOKEN=your_supabase_api_token
+SUPABASE_PROJECT_REF=your_supabase_project_id
+# Read-only database user (recommended for MCP server)
+# Create this user in Supabase with only SELECT permissions
+READONLY_DATABASE_URL=read_only_url
+WALKSCORE_API_KEY=your_walkscore_api
+WALKSCORE_BASE_URL=https://api.walkscore.com/score
 ```
 
 ### 2. Start the Application
