@@ -40,6 +40,6 @@ services:
       - .:/app
     ports:
       - "8000:8000"
-    command: python gradio_app.py
+    command: python app.py
     networks: [marea-network]
     user: "0:0"  # Run as root to access docker socket

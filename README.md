@@ -34,11 +34,19 @@ The Planner Agent orchestrates a sequential workflow through specialized agents:
 
 ```mermaid
 flowchart TD
-  F[Entry Point] --> A[Planner Agent]
-  A --> B[1. Budget Agent]
-  A --> C[2. Program Agent]
-  A --> D[3. GeoScout Agent]
-  A --> E[4. Final Synthesis & Output]
+  A[Entry Point] --> B[First Node: Call Budgeting Agent]
+  B --> C[Second Node: Call Program Agent]
+  C --> D[Third Node: Call Geolocation Agent]
+  D --> E[Fourth Node: Synthesize for User Facing Output]
+
+  B --> F[Budgeting Agent]
+  C --> G[Program Agent]
+  D --> H[Geolocation Agent]
+
+  I[Evaluation, Validation, Telemetry] -.-> B
+  I -.-> C
+  I -.-> D
+  I -.-> E
 ```
 
 ### Sequential Orchestration
@@ -100,13 +108,12 @@ This repository is organized to support **containerized agents** and **MCP serve
 ```text
 .
 ├── README.md
-├── gradio_app.py            # Main web application (FastAPI + Gradio)
+├── app.py                   # Main application entry point
 ├── docker-compose.yml       # Multi-container orchestration
 ├── Dockerfile               # Main application container
 ├── Makefile                 # Build and run commands
 ├── pyproject.toml           # Python dependencies
 ├── poetry.lock              # Locked dependency versions
-├── requirements.txt         # Required python packages for local tests
 │
 ├── agents/                  # LangGraph agent implementations
 │   ├── budgeting_agent/     # Budget calculation and recommendations
@@ -119,6 +126,7 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── graph.py
 │   │   ├── nodes.py
 │   │   ├── prompts.py
+│   │   ├── router.py
 │   │   └── state.py
 │   └── program_agent/       # Assistance program matching
 │       ├── __init__.py
@@ -282,6 +290,35 @@ CREDIT_RANGES = {
 MAX_HOUSING_RATIO = 0.30  # 30% of gross income
 MIN_READINESS_SCORE = 0.6
 ```
+
+---
+
+## Environment Setup
+
+Create a `.env` file in the project root with the following required keys:
+
+```bash
+# OpenAI API Key (required for LLM functionality)
+OPENAI_API_KEY=your_openai_api_key_here
+
+# Supabase Configuration (required for property data)
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_KEY=your_supabase_anon_key_here
+
+# LangSmith Configuration (optional, for monitoring)
+LANGSMITH_API_KEY=your_langsmith_api_key_here
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=civic-assistant-team-5
+```
+
+### Required Keys:
+
+- `OPENAI_API_KEY`: For LLM model access
+- `SUPABASE_URL` & `SUPABASE_KEY`: For property data access
+
+### Optional Keys:
+
+- LangSmith keys for monitoring and tracing
 
 ---
 
