@@ -106,6 +106,7 @@ This repository is organized to support **containerized agents** and **MCP serve
 ├── Makefile                 # Build and run commands
 ├── pyproject.toml           # Python dependencies
 ├── poetry.lock              # Locked dependency versions
+├── requirements.txt         # Required python packages for local tests
 │
 ├── agents/                  # LangGraph agent implementations
 │   ├── budgeting_agent/     # Budget calculation and recommendations
@@ -118,7 +119,6 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── graph.py
 │   │   ├── nodes.py
 │   │   ├── prompts.py
-│   │   ├── router.py
 │   │   └── state.py
 │   └── program_agent/       # Assistance program matching
 │       ├── __init__.py
@@ -148,6 +148,8 @@ This repository is organized to support **containerized agents** and **MCP serve
     ├── __init__.py
     ├── test_planner_agent.py    # Planner agent workflow tests
     └── test_program_agent.py    # Program agent tests
+└── utility/                 # Test suite
+    ├── secrets.py               # Secrets utility tools
 ```
 
 ---
@@ -259,35 +261,6 @@ CREDIT_RANGES = {
 MAX_HOUSING_RATIO = 0.30  # 30% of gross income
 MIN_READINESS_SCORE = 0.6
 ```
-
----
-
-## Environment Setup
-
-Create a `.env` file in the project root with the following required keys:
-
-```bash
-# OpenAI API Key (required for LLM functionality)
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Supabase Configuration (required for property data)
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_KEY=your_supabase_anon_key_here
-
-# LangSmith Configuration (optional, for monitoring)
-LANGSMITH_API_KEY=your_langsmith_api_key_here
-LANGSMITH_TRACING=true
-LANGSMITH_PROJECT=civic-assistant-team-5
-```
-
-### Required Keys:
-
-- `OPENAI_API_KEY`: For LLM model access
-- `SUPABASE_URL` & `SUPABASE_KEY`: For property data access
-
-### Optional Keys:
-
-- LangSmith keys for monitoring and tracing
 
 ---
 
