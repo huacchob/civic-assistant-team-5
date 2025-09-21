@@ -1,3 +1,5 @@
+"""Geoscout agent nodes."""
+
 from agents.geoscout_agent.state import GeoScoutState
 
 

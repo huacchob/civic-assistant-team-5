@@ -6,6 +6,8 @@ from typing_extensions import TypedDict
 
 
 class PlannerState(TypedDict):
+    """State definition for the Planner Agent workflow."""
+
     # Core workflow control
     current_step: str
 

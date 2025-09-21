@@ -2,14 +2,13 @@
 
 from typing import Any
 
-from langgraph.graph import START, StateGraph
-from langgraph.graph.state import CompiledStateGraph
-
 from agents.geoscout_agent.nodes import (
     node_commute_score,
     node_crime_rate,
 )
 from agents.geoscout_agent.state import GeoScoutState
+from langgraph.graph import START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
 
 
 def initialize_graph() -> GeoScoutState:
