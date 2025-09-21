@@ -2,6 +2,7 @@
 
 import gradio as gr
 from fastapi import FastAPI
+
 from web_server.api import app
 from web_server.chat import create_interface
 

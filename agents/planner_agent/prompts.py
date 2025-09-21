@@ -9,22 +9,23 @@ def get_comprehensive_analysis_prompt(budgeting_results: dict[Any, Any]) -> str:
     budget_value: str = (
         budgeting_results.get("budget_result", {})
         .get("budget", {})
-        .get("budget", "N/A")
+        .get("budget", "0.0")
     )
     loan_value: str = (
         budgeting_results.get("loan_result", {})
         .get("max_loan", {})
-        .get("max_loan", "N/A")
+        .get("max_loan", "0.0")
     )
+    income_value = budgeting_results.get("income", "0.0")
 
     return f"""
     You are a financial advisor helping someone with home buying. Based on their financial data below, provide a comprehensive analysis:
 
     FINANCIAL DATA:
-    - Income: ${budgeting_results.get("income", "N/A"):,.2f}
-    - Credit Score: {budgeting_results.get("credit_score", "N/A")}
-    - Monthly Budget (30% of income): ${budget_value:,.2f}
-    - Maximum Loan Qualification: ${loan_value:,.2f}
+    - Income: ${income_value:,.2f}
+    - Credit Score: {float(budgeting_results.get("credit_score", "0"))}
+    - Monthly Budget (30% of income): ${float(budget_value):,.2f}
+    - Maximum Loan Qualification: ${float(loan_value):,.2f}
 
     Please provide a concise analysis (max 300 words) that includes:
 

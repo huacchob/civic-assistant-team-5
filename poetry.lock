@@ -3001,6 +3001,18 @@ files = [
 ]
 
 [[package]]
+name = "remote-pdb"
+version = "2.1.0"
+description = "Remote vanilla PDB (over TCP sockets) *done right*: no extras, proper handling around connection failures and CI. Based on `pdbx <https://pypi.python.org/pypi/pdbx>`_."
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*"
+groups = ["main"]
+files = [
+    {file = "remote-pdb-2.1.0.tar.gz", hash = "sha256:2d70c6f41e0eabf0165e8f1be58f82aa7a605aaeab8f2aefeb9ce246431091c1"},
+    {file = "remote_pdb-2.1.0-py2.py3-none-any.whl", hash = "sha256:94f73a92ac1248cf16189211011f97096bdada8a7baac8c79372663bbb57b5d0"},
+]
+
+[[package]]
 name = "requests"
 version = "2.32.5"
 description = "Python HTTP for Humans."
@@ -4011,4 +4023,4 @@ cffi = ["cffi (>=1.17,<2.0) ; platform_python_implementation != \"PyPy\" and pyt
 [metadata]
 lock-version = "2.1"
 python-versions = ">=3.12,<4.0"
-content-hash = "3211d7ecfdaef49878c763e53f35a3506eca073c420fa9cd18d72285460b4b06"
+content-hash = "3b83b126880a6abc17019106daa9c3f28657fc2adf47d6f7270b9bea8361b2af"
