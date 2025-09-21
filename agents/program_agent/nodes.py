@@ -1,18 +1,23 @@
 # Here we use the OpenAI model, ask about programs, and filter based on the user profile.
+from typing import Any
+
 from langchain_openai import ChatOpenAI
+
 from agents.program_agent.prompts import FUNDING_PROGRAM_PROMPT
 
 llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
-async def fetch_government_programs(state):
-    profile = state.get("user_profile", {})
+
+async def fetch_government_programs(state) -> dict[str, list[dict[str, str]]]:
+    """Fetch government programs node."""
+    profile: Any = state.get("user_profile", {})
     query = f"Find homebuyer programs for profile: {profile}"
-   
-  # Call LLM (you can keep it async if you want actual LLM responses)
-    _ = await llm.ainvoke(FUNDING_PROGRAM_PROMPT.format(query=query))
+
+    # Call LLM (you can keep it async if you want actual LLM responses)
+    _ = await llm.ainvoke(input=FUNDING_PROGRAM_PROMPT.format(query=query))
 
     # --- MOCKED structured programs (replace with parsing of LLM response) ---
-    results = [
+    results: list[dict[str, str]] = [
         {
             "program_name": "FHA Loan",
             "eligibility": "Credit score ≥ 580, income limits apply",
@@ -34,13 +39,18 @@ async def fetch_government_programs(state):
     ]
 
     # --- Filter based on user profile ---
-    filtered = []
+    filtered: list[dict[str, str]] = []
     for prog in results:
         if prog["program_name"] == "FHA Loan" and profile.get("credit_score", 0) < 580:
             continue
-        if prog["program_name"] == "USDA Rural Development Loan" and profile.get("income", 0) > 60000:
+        if (
+            prog["program_name"] == "USDA Rural Development Loan"
+            and profile.get("income", 0) > 60000
+        ):
             continue
-        if prog["program_name"] == "VA Home Loan" and not profile.get("military", False):
+        if prog["program_name"] == "VA Home Loan" and not profile.get(
+            "military", False
+        ):
             continue
         filtered.append(prog)
 
