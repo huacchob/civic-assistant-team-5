@@ -43,6 +43,11 @@ async def run_geoscout_agent(user_data: dict[Any, Any]) -> dict[str, Any] | Any:
         "step_count": 0,
         "error_count": 0,
         "zip_code": user_data.get("zip_code", None),
+        "transit_score": "",
+        "transit_desc": "",
+        "transit_summary": "",
+        "lat": 0.0,
+        "lon": 0.0,
     }
 
     # Create and run the graph

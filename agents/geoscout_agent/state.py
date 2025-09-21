@@ -14,3 +14,10 @@ class GeoScoutState(TypedDict):
 
     # User input data
     zip_code: Optional[str]
+
+    # Transit node output
+    transit_score: int
+    transit_desc: str
+    transit_summary: str
+    lat: float
+    lon: float

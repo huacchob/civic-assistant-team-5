@@ -6,7 +6,7 @@ import sys
 
 def get_logger(name: str) -> logging.Logger:
     """Return a logger for the given file/module name."""
-    logger = logging.getLogger(name=name)
+    logger: logging.Logger = logging.getLogger(name=name)
 
     if not logger.handlers:  # avoid duplicate handlers
         logger.setLevel(level=logging.DEBUG)

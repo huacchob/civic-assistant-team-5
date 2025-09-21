@@ -6,7 +6,7 @@ from typing import Any, Dict
 import httpx
 from fastmcp import FastMCP
 
-from utility.secrets import load_secrets
+from utility.sec_vars import load_secrets
 
 # Load environment variables from .env file
 load_secrets()

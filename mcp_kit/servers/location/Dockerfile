@@ -5,10 +5,11 @@ FROM python:3.12-slim
 WORKDIR /app
 
 # Copy requirements and install dependencies
-RUN pip install fastmcp httpx python-dotenv
+RUN pip install fastmcp httpx
 
 # Copy application code
-COPY . .
+COPY utility/ ./utility/
+COPY mcp_kit/servers/location/ .
 
 # Create non-root user for security
 RUN useradd -m mcpuser && chown -R mcpuser:mcpuser /app

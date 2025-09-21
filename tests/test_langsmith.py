@@ -2,7 +2,7 @@
 
 import pytest
 
-from utility.secrets import load_secrets
+from utility.sec_vars import load_secrets
 
 load_secrets()
 
