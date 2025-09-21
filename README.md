@@ -6,7 +6,15 @@ _Multi-agent homebuyer assistance system with financial analysis and neighborhoo
 
 ---
 
-[Architecture Overview](docs/architecture_overview.md)
+## Architecture Overview
+
+This project follows a **multi-agent pipeline architecture** built with LangGraph and MCP (Model Context Protocol).
+
+- **Specialized agents** working with external data sources via MCP
+- **MCP servers** providing real-time financial and property data
+- **LangGraph workflows** orchestrating agent interactions
+- **Docker containerization** for scalable deployment
+- **Budgeting-focused MVP** with property analysis capabilities
 
 ---
 
