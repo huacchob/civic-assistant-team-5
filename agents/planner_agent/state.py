@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional
 
 from typing_extensions import TypedDict
 
-
 class PlannerState(TypedDict):
     # Core workflow control
     current_step: str
@@ -17,8 +16,8 @@ class PlannerState(TypedDict):
 
     # Agent results (complete states from each agent)
     budgeting_agent_results: Optional[Dict[str, Any]]
-    geoscout_agent_results: Optional[Dict[str, Any]]
+    geoscout_agent_results: Optional[Dict[str, Any]] 
     program_agent_results: Optional[Dict[str, Any]]
 
     # Planner-specific outputs
-    final_analysis: Optional[str]  # Comprehensive synthesis
+    final_analysis: Optional[str]   # Comprehensive synthesis

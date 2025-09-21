@@ -1,26 +1,23 @@
 """Graph for the Planner Agent workflow."""
 
 from langgraph.graph import StateGraph
-
-from .nodes import run_budgeting_agent_node, run_geoscout_agent_node, synthesis_node
 from .state import PlannerState
+from .nodes import run_budgeting_agent_node, synthesis_node
 
 
 def initialize_graph() -> StateGraph:
     """Initialize the planner agent graph with sequential agent calls."""
     graph = StateGraph(PlannerState)
-
+    
     # Add nodes for each agent
     graph.add_node("run_budgeting_agent", run_budgeting_agent_node)
-    graph.add_node("run_geoscout_agent", run_geoscout_agent_node)
     graph.add_node("synthesis", synthesis_node)
-
+    
     # Set up the workflow: budgeting -> synthesis
     graph.set_entry_point("run_budgeting_agent")
-    graph.add_edge("run_budgeting_agent", "run_geoscout_agent")
-    graph.add_edge("run_geoscout_agent", "synthesis")
+    graph.add_edge("run_budgeting_agent", "synthesis")
     graph.set_finish_point("synthesis")
-
+    
     return graph
 
 
@@ -42,11 +39,11 @@ async def run_planner_agent(user_data):
         "budgeting_agent_results": None,
         "geoscout_agent_results": None,
         "program_agent_results": None,
-        "final_analysis": None,
+        "final_analysis": None
     }
-
+    
     # Create and run the graph
     agent = compile_graph()
     result = await agent.ainvoke(initial_state)
-
+    
     return result
