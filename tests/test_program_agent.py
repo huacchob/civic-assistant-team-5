@@ -1,6 +1,17 @@
 """Run the Program Agent."""
+
 import asyncio
+from pathlib import Path
+
+from dotenv import load_dotenv
+
 from agents.program_agent.graph import build_program_graph
+
+
+def load_environment_variables() -> None:
+    """Load environment variables from .env file."""
+    creds_path: Path = Path(__file__).parent.parent.joinpath(".env")
+    load_dotenv(dotenv_path=creds_path)
 
 
 async def run_agent():
@@ -21,14 +32,16 @@ async def run_agent():
         },
         "program_matcher_results": [],
         "error_count": 0,
-        "session_id": "demo-session"
+        "session_id": "demo-session",
     }
-    
+
     final_state = await graph.ainvoke(initial_state)
 
     print("\n🏡 Available Funding Programs:\n")
     for prog in final_state.get("program_matcher_results", []):
-        print(f"- {prog['program_name']}: {prog['benefits']} (Source: {prog['source']})")
+        print(
+            f"- {prog['program_name']}: {prog['benefits']} (Source: {prog['source']})"
+        )
 
 
 async def visualize_graph():
@@ -41,13 +54,5 @@ async def visualize_graph():
 
 if __name__ == "__main__":
     # 👉 Choose which one you want to run:
-    asyncio.run(run_agent())       # run the agent with profile
+    asyncio.run(run_agent())  # run the agent with profile
     # asyncio.run(visualize_graph()) # uncomment to export graph
-
-
-
-    
-
-
-
-

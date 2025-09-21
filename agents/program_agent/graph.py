@@ -1,7 +1,10 @@
 """Graph for the Program Agent workflow."""
+
 from langgraph.graph import StateGraph
-from .state import ProgramMatcherState
+
 from .nodes import fetch_government_programs
+from .state import ProgramMatcherState
+
 
 def build_program_graph():
     graph = StateGraph(ProgramMatcherState)

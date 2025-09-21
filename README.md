@@ -2,13 +2,20 @@
 
 _Multi-agent homebuyer assistance system with financial analysis and neighborhood matching._  
 **Disclaimer: This project is for educational purposes only. It does not provide financial advice.**
+**Disclaimer: This project is for educational purposes only. It does not provide financial advice.**
 
 ---
 
 ## Architecture Overview
 
 This project follows a **multi-agent pipeline architecture** built with LangGraph and MCP (Model Context Protocol).
+This project follows a **multi-agent pipeline architecture** built with LangGraph and MCP (Model Context Protocol).
 
+- **Specialized agents** working with external data sources via MCP
+- **MCP servers** providing real-time financial and property data
+- **LangGraph workflows** orchestrating agent interactions
+- **Docker containerization** for scalable deployment
+- **Budgeting-focused MVP** with property analysis capabilities
 - **Specialized agents** working with external data sources via MCP
 - **MCP servers** providing real-time financial and property data
 - **LangGraph workflows** orchestrating agent interactions
@@ -20,15 +27,21 @@ This project follows a **multi-agent pipeline architecture** built with LangGrap
 ## Agent Pipeline
 
 The system consists of a **Planner Agent** that orchestrates specialized agents:
+The system consists of a **Planner Agent** that orchestrates specialized agents:
 
 - **Planner Agent** – orchestrates the sequential workflow and synthesizes final recommendations
 - **Budgeting Agent** – calculates housing affordability and provides budget recommendations
+- **Planner Agent** – orchestrates the sequential workflow and synthesizes final recommendations
+- **Budgeting Agent** – calculates housing affordability and provides budget recommendations
 - **Geo-Scout Agent** – finds neighborhoods within budget, evaluates quality of life
+- **Program Agent** – identifies eligible assistance programs and loans
 - **Program Agent** – identifies eligible assistance programs and loans
 
 ---
 
 ## Core Workflow
+
+The Planner Agent orchestrates a sequential workflow through specialized agents:
 
 The Planner Agent orchestrates a sequential workflow through specialized agents:
 
@@ -51,6 +64,24 @@ flowchart TD
 ### Evaluation, Validation, Telemetry
 
 Each step includes validation, error handling, and performance monitoring to ensure reliable operation.
+F[Entry Point] --> A[Planner Agent]
+A --> B[1. Budget Agent]
+A --> C[2. Program Agent]
+A --> D[3. GeoScout Agent]
+A --> E[4. Final Synthesis & Output]
+
+````
+
+### Sequential Orchestration
+
+1. **Budgeting Agent** - Calculates housing affordability and budget recommendations
+2. **Program Agent** - Identifies eligible assistance programs and loans
+3. **Geo-Scout Agent** - Finds neighborhoods within budget and evaluates quality of life
+4. **Synthesis** - Combines all outputs into actionable user recommendations
+
+### Evaluation, Validation, Telemetry
+
+Each step includes validation, error handling, and performance monitoring to ensure reliable operation.
 
 ---
 
@@ -58,36 +89,58 @@ Each step includes validation, error handling, and performance monitoring to ens
 
 ### Planner Agent
 
-**Role:** Orchestrates the sequential workflow and synthesizes final recommendations  
-**Input:** User financial profile, preferences, and goals  
-**Output:** Comprehensive homebuying plan with actionable recommendations  
-**Workflow:** 
+**Role:** Orchestrates the sequential workflow and synthesizes final recommendations
+**Input:** User financial profile, preferences, and goals
+**Output:** Comprehensive homebuying plan with actionable recommendations
+**Workflow:**
 1. Calls Budgeting Agent to establish financial foundation
-2. Calls Program Agent to identify assistance opportunities  
+2. Calls Program Agent to identify assistance opportunities
 3. Calls Geo-Scout Agent to find suitable neighborhoods
 4. Synthesizes all outputs into cohesive user-facing recommendations
 **Integration:** Coordinates with all specialized agents via LangGraph workflows
 
 ### Budgeting Agent
 
-**Input:** User income, financial goals  
-**Output:** `{budget_amount, budget_percentage, recommendations}`  
-**Rule:** Housing budget = 30% of gross income  
+**Input:** User income, financial goals
+**Output:** `{budget_amount, budget_percentage, recommendations}`
+**Rule:** Housing budget = 30% of gross income
+**MCP Integration:** Finance server for budget calculations
+### Planner Agent
+
+**Role:** Orchestrates the sequential workflow and synthesizes final recommendations
+**Input:** User financial profile, preferences, and goals
+**Output:** Comprehensive homebuying plan with actionable recommendations
+**Workflow:**
+
+1. Calls Budgeting Agent to establish financial foundation
+2. Calls Program Agent to identify assistance opportunities
+3. Calls Geo-Scout Agent to find suitable neighborhoods
+4. Synthesizes all outputs into cohesive user-facing recommendations
+   **Integration:** Coordinates with all specialized agents via LangGraph workflows
+
+### Budgeting Agent
+
+**Input:** User income, financial goals
+**Output:** `{budget_amount, budget_percentage, recommendations}`
+**Rule:** Housing budget = 30% of gross income
 **MCP Integration:** Finance server for budget calculations
 
 ### Geo-Scout Agent
 
-**Input:** Budget from Budgeting Agent, target city, user priorities  
-**Output:** `[{zip, median_home_value, school_rating, transit_score, safety_index}]`  
-**Rule:** All median home values ≤ Budgeting Agent's max  
+**Input:** Budget from Budgeting Agent, target city, user priorities
+**Input:** Budget from Budgeting Agent, target city, user priorities
+**Output:** `[{zip, median_home_value, school_rating, transit_score, safety_index}]`
+**Rule:** All median home values ≤ Budgeting Agent's max
+**Rule:** All median home values ≤ Budgeting Agent's max
 **Cache:** Median home values per ZIP
 
 ### Program Agent
+### Program Agent
 
-**Input:** Location, income vs AMI, buyer status  
-**Output:** `[{name, eligibility, benefit}]`  
-**Rule:** Must match profile, no hallucinated programs  
-**Cache:** Programs by AMI bracket + state  
+**Input:** Location, income vs AMI, buyer status
+**Output:** `[{name, eligibility, benefit}]`
+**Rule:** Must match profile, no hallucinated programs
+**Cache:** Programs by AMI bracket + state
 **HITL:** User confirms eligibility before recommendations
 
 ---
@@ -105,6 +158,13 @@ This repository is organized to support **containerized agents** and **MCP serve
 ├── Makefile                 # Build and run commands
 ├── pyproject.toml           # Python dependencies
 ├── poetry.lock              # Locked dependency versions
+├── gradio_app.py            # Main web application (FastAPI + Gradio)
+├── docker-compose.yml       # Multi-container orchestration
+├── Dockerfile               # Main application container
+├── Makefile                 # Build and run commands
+├── pyproject.toml           # Python dependencies
+├── poetry.lock              # Locked dependency versions
+├── requirements.txt         # Required python packages for local tests
 │
 ├── agents/                  # LangGraph agent implementations
 │   ├── budgeting_agent/     # Budget calculation and recommendations
@@ -118,6 +178,18 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── nodes.py
 │   │   ├── prompts.py
 │   │   ├── router.py
+│   │   └── state.py
+│   └── program_agent/       # Assistance program matching
+│   ├── budgeting_agent/     # Budget calculation and recommendations
+│   │   ├── graph.py         # LangGraph workflow definition
+│   │   ├── nodes.py         # Individual workflow nodes
+│   │   ├── prompts.py       # LLM prompts and templates
+│   │   └── state.py         # State management
+│   ├── geoscout_agent/      # Neighborhood discovery
+│   │   ├── __init__.py
+│   │   ├── graph.py
+│   │   ├── nodes.py
+│   │   ├── prompts.py
 │   │   └── state.py
 │   └── program_agent/       # Assistance program matching
 │       ├── __init__.py
@@ -140,14 +212,28 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │       └── Dockerfile
 │   └── clients/             # MCP client implementations
 │       ├── __init__.py
+├── mcp_kit/                 # MCP toolkit components
+│   ├── __init__.py
+│   ├── adapter.py           # MCP adapter for service integration
+│   ├── tools.py             # LangChain tools for MCP services
+│   ├── README.md            # MCP kit documentation
+│   ├── servers/             # MCP server implementations
+│   │   ├── finance/         # Finance calculation server
+│   │   │   ├── Dockerfile
+│   │   │   └── server.py
+│   │   └── supabase/        # Property data server
+│   │       └── Dockerfile
+│   └── clients/             # MCP client implementations
+│       ├── __init__.py
 │       ├── finance_client.py
 │       └── supabase_client.py
 │
 └── tests/                   # Test suite
+└── tests/                   # Test suite
     ├── __init__.py
     ├── test_planner_agent.py    # Planner agent workflow tests
     └── test_program_agent.py    # Program agent tests
-```
+````
 
 ---
 
@@ -156,6 +242,7 @@ This repository is organized to support **containerized agents** and **MCP serve
 ### 1. Environment Setup
 
 Create a `.env` file with your API keys:
+
 ```bash
 OPENAI_API_KEY=your_openai_api_key_here
 SUPABASE_URL=your_supabase_url_here
@@ -197,13 +284,131 @@ make stop
 
 ## Available Commands
 
-| Command | Description |
-|---------|-------------|
-| `make start` | Start MAREA application |
-| `make stop` | Stop MAREA application |
-| `make logs` | Show container logs |
-| `make test-planner` | Run planner agent test |
-| `make clean` | Clean up files |
+| Command             | Description             |
+| ------------------- | ----------------------- |
+| `make start`        | Start MAREA application |
+| `make stop`         | Stop MAREA application  |
+| `make logs`         | Show container logs     |
+| `make test-planner` | Run planner agent test  |
+| `make clean`        | Clean up files          |
+
+---
+
+## Web Interface
+
+The system provides a modern web interface built with **FastAPI + Gradio**:
+
+- **Input Form**: Enter income, credit score, target home ID, and zip code
+- **Real-time Analysis**: Get instant financial analysis and recommendations
+- **API Access**: RESTful API for programmatic integration
+- **Example Data**: Pre-loaded examples for quick testing
+
+### API Endpoints
+
+- `POST /analyze` - Analyze user financial profile
+- `GET /docs` - API documentation
+
+---
+
+## MCP Architecture
+
+The system uses **Model Context Protocol (MCP)** to connect agents with external data sources:
+
+- **MCP Adapter**: Central coordinator managing connections to all MCP servers
+- **Finance MCP Server**: Provides budget calculations and financial analysis
+- **Supabase MCP Server**: Supplies property data and neighborhood information
+- **LangChain Tools**: Bridge between agents and MCP services
+
+### Key Components
+
+- `mcp_kit/adapter.py` - MCP connection management
+- `mcp_kit/tools.py` - LangChain tools for MCP integration
+- `mcp_kit/servers/` - Individual MCP server implementations
+- `mcp_kit/clients/` - MCP client wrappers
+  ├── test_planner_agent.py # Planner agent workflow tests
+  └── test_program_agent.py # Program agent tests
+  └── utility/ # Test suite
+  ├── secrets.py # Secrets utility tools
+
+````
+
+---
+
+## Quick Start
+
+### 1. Environment Setup
+
+Create a `.env` file with your API keys:
+
+```bash
+OPENAI_API_KEY=your_openai_api_key_here
+SUPABASE_URL=your_supabase_url_here
+SUPABASE_KEY=your_supabase_anon_key_here
+WEATHER_API_KEY=your_weather_api_key
+GNEWS_API_KEY=your_gnews_api_key
+LANGSMITH_API_KEY=your_langsmith_api_key
+LANGSMITH_TRACING=true
+LANGSMITH_PROJECT=your_langsmith_project_name
+# Supabase Database Configuration
+POSTGRES_DB=postgres
+POSTGRES_USER=postgres_user
+POSTGRES_PASSWORD=postgres_pass
+POSTGRES_HOST=postgres_host
+POSTGRES_PORT=postgres_port
+# Full database URL for libraries to use (with SSL required)
+DATABASE_URL=db_url
+# Supabase MCP Server Configuration
+SUPABASE_ACCESS_TOKEN=your_supabase_api_token
+SUPABASE_PROJECT_REF=your_supabase_project_id
+# Read-only database user (recommended for MCP server)
+# Create this user in Supabase with only SELECT permissions
+READONLY_DATABASE_URL=read_only_url
+WALKSCORE_API_KEY=your_walkscore_api
+WALKSCORE_BASE_URL=https://api.walkscore.com/score
+````
+
+### 2. Start the Application
+
+```bash
+# Start all services
+make start
+
+# Or manually
+docker compose up --build -d
+```
+
+### 3. Access the Interface
+
+- **Web Interface**: http://localhost:8000
+- **API Documentation**: http://localhost:8000/docs
+
+### 4. Run Tests
+
+```bash
+# Test the planner agent workflow
+make test-planner
+
+# Test individual agents
+python tests/test_program_agent.py
+```
+
+### 5. Stop Services
+
+```bash
+make stop
+```
+
+---
+
+## Available Commands
+
+| Command             | Description             |
+| ------------------- | ----------------------- |
+| `make start`        | Start MAREA application |
+| `make stop`         | Stop MAREA application  |
+| `make logs`         | Show container logs     |
+| `make test-planner` | Run planner agent test  |
+| `make clean`        | Clean up files          |
 
 ---
 
@@ -279,10 +484,12 @@ LANGSMITH_PROJECT=civic-assistant-team-5
 ```
 
 ### Required Keys:
+
 - `OPENAI_API_KEY`: For LLM model access
 - `SUPABASE_URL` & `SUPABASE_KEY`: For property data access
 
 ### Optional Keys:
+
 - LangSmith keys for monitoring and tracing
 
 ---
@@ -315,3 +522,14 @@ MAREA (Multi-Agent Real Estate Assistant) is designed specifically for first-tim
 ```
 
 ---
+
+## Langsmith integration
+
+Successfully integrated LangSmith monitoring into the MCP Agent.
+Environment variables (LANGSMITH_API_KEY, LANGSMITH_TRACING, LANGSMITH_PROJECT) are loaded via .env file and passed to the agent in Docker.
+Verified end-to-end tracing by running a test prompt (Hello, are you connected to LangSmith?) and confirming the run appears in the LangSmith dashboard under project civic-assistant-team-5.
+Traces show inputs, outputs, token usage, latency, and model metadata.
+This enables full observability of LLM calls for debugging, optimization, and cost tracking.
+Next Steps:
+Add more detailed traces for MCP client-server interactions (e.g., get_mcp_data() calls).
+Configure dashboards/alerts in LangSmith if required by the team.
