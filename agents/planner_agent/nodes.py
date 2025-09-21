@@ -2,8 +2,9 @@
 
 from typing import Any
 
-from agents.budgeting_agent.graph import run_budgeting_agent
 from langchain_core.messages.base import BaseMessage
+
+from agents.budgeting_agent.graph import run_budgeting_agent
 
 from .prompts import get_comprehensive_analysis_prompt
 from .state import PlannerState
@@ -40,7 +41,7 @@ async def run_geoscout_agent_node(state: PlannerState) -> PlannerState:
     print(f"STEP: {current_step} -> Calling geoscout agent...")
 
     # Extract user data from state
-    user_data = {
+    user_data: dict[str, Any] = {
         "income": state["income"],
         "target_home_id": state["target_home_id"],
         "credit_score": state["credit_score"],

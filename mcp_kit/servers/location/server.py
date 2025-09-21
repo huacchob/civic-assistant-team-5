@@ -4,11 +4,12 @@ import os
 from typing import Any, Dict
 
 import httpx
-from dotenv import load_dotenv
 from fastmcp import FastMCP
 
+from utility.secrets import load_secrets
+
 # Load environment variables from .env file
-load_dotenv()
+load_secrets()
 
 server: FastMCP[Any] = FastMCP(name="Location")
 
@@ -18,7 +19,7 @@ def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
     try:
         # Use a free geocoding service - we'll use a simple approach
         # For production, you might want to use Google Maps API or similar
-        url = f"https://api.zippopotam.us/us/{zip_code}"
+        url: str = f"https://api.zippopotam.us/us/{zip_code}"
 
         with httpx.Client() as client:
             response: httpx.Response = client.get(url=url, timeout=10.0)
@@ -63,11 +64,11 @@ def get_transit_score(zip_code: str) -> Dict[str, Any]:
             }
 
         # Make the Transit API request
-        params = {"lat": lat, "lon": lon, "wsapikey": api_key}
+        params: dict[str, Any] = {"lat": lat, "lon": lon, "wsapikey": api_key}
 
         with httpx.Client() as client:
-            response = client.get(
-                "https://transit.walkscore.com/transit/score/",
+            response: httpx.Response = client.get(
+                url="https://transit.walkscore.com/transit/score/",
                 params=params,
                 timeout=10.0,
             )

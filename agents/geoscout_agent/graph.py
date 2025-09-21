@@ -2,13 +2,14 @@
 
 from typing import Any
 
+from langgraph.graph import START, StateGraph
+from langgraph.graph.state import CompiledStateGraph
+
 from agents.geoscout_agent.nodes import (
     node_commute_score,
     node_crime_rate,
 )
 from agents.geoscout_agent.state import GeoScoutState
-from langgraph.graph import START, StateGraph
-from langgraph.graph.state import CompiledStateGraph
 
 
 def initialize_graph() -> GeoScoutState:
@@ -34,7 +35,7 @@ def compile_graph() -> CompiledStateGraph[
     return graph.compile()
 
 
-async def run_geoscout_agent(user_data: dict[Any, Any]):
+async def run_geoscout_agent(user_data: dict[Any, Any]) -> dict[str, Any] | Any:
     """Entry point to run the geoscout agent with user data."""
     # User input data
     initial_state = {
@@ -48,6 +49,6 @@ async def run_geoscout_agent(user_data: dict[Any, Any]):
     agent: CompiledStateGraph[GeoScoutState, None, GeoScoutState, GeoScoutState] = (
         compile_graph()
     )
-    result = await agent.ainvoke(input=initial_state)
+    result: dict[str, Any] | Any = await agent.ainvoke(input=initial_state)
 
     return result
