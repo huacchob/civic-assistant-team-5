@@ -5,7 +5,10 @@ from langchain_openai import ChatOpenAI
 
 from agents.program_agent.prompts import FUNDING_PROGRAM_PROMPT
 
-llm = ChatOpenAI(model="gpt-4o-mini", temperature=0)
+
+def initiate_llm() -> ChatOpenAI:
+    """Initialize LLM"""
+    return ChatOpenAI(model="gpt-4o-mini", temperature=0)
 
 
 async def fetch_government_programs(state) -> dict[str, list[dict[str, str]]]:
@@ -14,7 +17,7 @@ async def fetch_government_programs(state) -> dict[str, list[dict[str, str]]]:
     query = f"Find homebuyer programs for profile: {profile}"
 
     # Call LLM (you can keep it async if you want actual LLM responses)
-    _ = await llm.ainvoke(input=FUNDING_PROGRAM_PROMPT.format(query=query))
+    _ = await initiate_llm().ainvoke(input=FUNDING_PROGRAM_PROMPT.format(query=query))
 
     # --- MOCKED structured programs (replace with parsing of LLM response) ---
     results: list[dict[str, str]] = [

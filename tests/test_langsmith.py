@@ -1,19 +1,10 @@
 """Test langsmith."""
 
-import os
-
 import pytest
 
-from tests.conftest import load_environment_variables
+from utility.secrets import load_secrets
 
-load_environment_variables()
-os.environ["OPENAI_API_KEY"] = os.getenv(key="OPENAI_API_KEY")
-
-# Force LangSmith tracing (in case not loaded from .env)
-os.environ["LANGSMITH_TRACING"] = os.getenv("LANGSMITH_TRACING", "true")
-os.environ["LANGSMITH_PROJECT"] = os.getenv(
-    "LANGSMITH_PROJECT", "civic-assistant-team-5"
-)
+load_secrets()
 
 
 def test_langsmith_connection(langsmith_client):

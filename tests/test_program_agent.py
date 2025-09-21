@@ -1,20 +1,15 @@
 """Run the Program Agent."""
 
-import asyncio
-from pathlib import Path
-
-from dotenv import load_dotenv
+import pytest
 
 from agents.program_agent.graph import build_program_graph
+from utility.secrets import load_secrets
+
+load_secrets()
 
 
-def load_environment_variables() -> None:
-    """Load environment variables from .env file."""
-    creds_path: Path = Path(__file__).parent.parent.joinpath(".env")
-    load_dotenv(dotenv_path=creds_path)
-
-
-async def run_agent():
+@pytest.mark.anyio
+async def test_run_agent():
     """Run the program agent with a sample user profile."""
     graph = build_program_graph()
 
@@ -42,17 +37,3 @@ async def run_agent():
         print(
             f"- {prog['program_name']}: {prog['benefits']} (Source: {prog['source']})"
         )
-
-
-async def visualize_graph():
-    """Export the Program Agent workflow graph as PNG."""
-    graph = build_program_graph()
-    compiled = graph.compile()
-    compiled.get_graph().draw_mermaid_png("program_agent_graph.png")
-    print("📊 Program Agent workflow graph saved as program_agent_graph.png")
-
-
-if __name__ == "__main__":
-    # 👉 Choose which one you want to run:
-    asyncio.run(run_agent())  # run the agent with profile
-    # asyncio.run(visualize_graph()) # uncomment to export graph
