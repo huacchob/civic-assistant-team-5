@@ -3,8 +3,11 @@
 import gradio as gr
 from fastapi import FastAPI
 
+from utility.secrets import load_secrets
 from web_server.api import app
 from web_server.chat import create_interface
+
+load_secrets()
 
 # Mount the Gradio interface to FastAPI
 demo: gr.Blocks = create_interface()

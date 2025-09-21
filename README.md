@@ -117,12 +117,6 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── prompts.py
 │   │   ├── router.py
 │   │   └── state.py
-│   ├── geoscout_agent/      # Neighborhood discovery
-│   │   ├── __init__.py
-│   │   ├── graph.py
-│   │   ├── nodes.py
-│   │   ├── prompts.py
-│   │   └── state.py
 │   └── program_agent/       # Assistance program matching
 │       ├── __init__.py
 │       ├── graph.py
@@ -140,11 +134,15 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── finance/         # Finance calculation server
 │   │   │   ├── Dockerfile
 │   │   │   └── server.py
+│   │   ├── location/        # Transit score tools
+│   │   │   ├── Dockerfile
+│   │   │   └── server.py
 │   │   └── supabase/        # Property data server
 │   │       └── Dockerfile
 │   └── clients/             # MCP client implementations
 │       ├── __init__.py
 │       ├── finance_client.py
+│       ├── location_client.py
 │       └── supabase_client.py
 │
 │

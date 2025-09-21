@@ -1,12 +1,12 @@
 """Prompts for the Budgeting Agent workflow."""
 
-# No prompts needed - this agent only calls tools and stores raw results
+from typing import Any
 
 
-def get_budget_calculation_prompt(income: float, budget_result: dict) -> str:
+def get_budget_calculation_prompt(income: float, budget_result: dict[str, Any]) -> str:
     """Prompt for budget calculation node"""
     # Extract the actual budget value from the nested structure
-    budget_value = budget_result["budget"]["budget"]
+    budget_value: Any = budget_result["budget"]["budget"]
 
     return f"""
     User income: ${income:,.0f}
@@ -24,7 +24,9 @@ def get_property_query_prompt(target_home_id: int) -> str:
     """
 
 
-def get_analysis_prompt(budget_result: dict, property_result: dict) -> str:
+def get_analysis_prompt(
+    budget_result: dict[str, Any], property_result: dict[str, Any]
+) -> str:
     """Prompt for analysis node"""
     return f"""
     I have the following data to analyze:

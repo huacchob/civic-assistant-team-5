@@ -1,6 +1,6 @@
 """State for the Budgeting Agent workflow."""
 
-from typing import Any, Dict, Optional
+from typing import Any, Optional
 
 from typing_extensions import TypedDict
 
@@ -15,9 +15,9 @@ class BudgetingState(TypedDict):
     zip_code: Optional[str]
 
     # Tool results
-    budget_result: Optional[Dict[str, Any]]
-    property_result: Optional[Dict[str, Any]]
+    budget_result: Optional[dict[str, Any]]
+    property_result: Optional[dict[str, Any]]
 
     # Analysis and output
-    analysis: Optional[Dict[str, Any]]
-    final_output: Optional[Dict[str, Any]]
+    analysis: Optional[dict[str, Any]]
+    final_output: Optional[dict[str, Any]]
