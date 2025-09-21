@@ -29,4 +29,4 @@ jobs:
         run: "poetry install --no-root"
 
       - name: "MCP Tests"
-        run: 'poetry run python -c ''from mcp_integration.adapter import Adapter; print("MCP Integration imports successfully")'''
+        run: "poetry run python -m pytest tests"
