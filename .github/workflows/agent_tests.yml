@@ -47,4 +47,4 @@ jobs:
         run: "poetry install --no-root"
 
       - name: "Test Agent Imports"
-        run: 'poetry run python -c ''from agents.finance_agent import *; from agents.geoscout_agent import *; from agents.program_agent import *; print("All agents import successfully")'''
+        run: 'poetry run python -c ''from agents.budgeting_agent import *; from agents.geoscout_agent import *; from agents.program_agent import *; print("All agents import successfully")'''
