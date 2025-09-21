@@ -100,7 +100,7 @@ class SupabaseClient:
         )
 
         # Parse and return clean data
-        return self._parse_property_data(result)
+        return self._parse_property_data(result=result)
 
     def _parse_property_data(self, result):
         """Parse MCP result and return clean property data"""

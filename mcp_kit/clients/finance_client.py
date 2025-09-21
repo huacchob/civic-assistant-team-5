@@ -2,17 +2,17 @@
 
 import asyncio
 
-from dotenv import load_dotenv
 from mcp import ClientSession, ListToolsResult, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp.types import CallToolResult
+from utility.secrets import load_secrets
 
 # Load environment variables from .env file
-load_dotenv()
+load_secrets()
 
 
 class FinanceClient:
-    """Finance Clinet class."""
+    """Finance Client class."""
 
     def __init__(self, container_name="finance-mcp-server") -> None:
         """Initialize FinanceClient."""

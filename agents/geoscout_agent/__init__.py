@@ -1,1 +1,1 @@
-"""Initialize the GeoScout Agent package."""
+"""Initialize GeoScout agent."""

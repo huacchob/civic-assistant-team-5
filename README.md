@@ -6,35 +6,17 @@ _Multi-agent homebuyer assistance system with financial analysis and neighborhoo
 
 ---
 
-## Architecture Overview
-
-This project follows a **multi-agent pipeline architecture** built with LangGraph and MCP (Model Context Protocol).
-This project follows a **multi-agent pipeline architecture** built with LangGraph and MCP (Model Context Protocol).
-
-- **Specialized agents** working with external data sources via MCP
-- **MCP servers** providing real-time financial and property data
-- **LangGraph workflows** orchestrating agent interactions
-- **Docker containerization** for scalable deployment
-- **Budgeting-focused MVP** with property analysis capabilities
-- **Specialized agents** working with external data sources via MCP
-- **MCP servers** providing real-time financial and property data
-- **LangGraph workflows** orchestrating agent interactions
-- **Docker containerization** for scalable deployment
-- **Budgeting-focused MVP** with property analysis capabilities
+[Architecture Overview](docs/architecture_overview.md)
 
 ---
 
 ## Agent Pipeline
 
 The system consists of a **Planner Agent** that orchestrates specialized agents:
-The system consists of a **Planner Agent** that orchestrates specialized agents:
 
 - **Planner Agent** – orchestrates the sequential workflow and synthesizes final recommendations
 - **Budgeting Agent** – calculates housing affordability and provides budget recommendations
-- **Planner Agent** – orchestrates the sequential workflow and synthesizes final recommendations
-- **Budgeting Agent** – calculates housing affordability and provides budget recommendations
 - **Geo-Scout Agent** – finds neighborhoods within budget, evaluates quality of life
-- **Program Agent** – identifies eligible assistance programs and loans
 - **Program Agent** – identifies eligible assistance programs and loans
 
 ---
@@ -54,57 +36,10 @@ flowchart TD
   A --> E[4. Final Synthesis & Output]
 ```
 
-### Sequential Orchestration
-
-1. **Budgeting Agent** - Calculates housing affordability and budget recommendations
-2. **Program Agent** - Identifies eligible assistance programs and loans
-3. **Geo-Scout Agent** - Finds neighborhoods within budget and evaluates quality of life
-4. **Synthesis** - Combines all outputs into actionable user recommendations
-
-### Evaluation, Validation, Telemetry
-
-Each step includes validation, error handling, and performance monitoring to ensure reliable operation.
-F[Entry Point] --> A[Planner Agent]
-A --> B[1. Budget Agent]
-A --> C[2. Program Agent]
-A --> D[3. GeoScout Agent]
-A --> E[4. Final Synthesis & Output]
-
-````
-
-### Sequential Orchestration
-
-1. **Budgeting Agent** - Calculates housing affordability and budget recommendations
-2. **Program Agent** - Identifies eligible assistance programs and loans
-3. **Geo-Scout Agent** - Finds neighborhoods within budget and evaluates quality of life
-4. **Synthesis** - Combines all outputs into actionable user recommendations
-
-### Evaluation, Validation, Telemetry
-
-Each step includes validation, error handling, and performance monitoring to ensure reliable operation.
-
 ---
 
 ## Agent Specifications
 
-### Planner Agent
-
-**Role:** Orchestrates the sequential workflow and synthesizes final recommendations
-**Input:** User financial profile, preferences, and goals
-**Output:** Comprehensive homebuying plan with actionable recommendations
-**Workflow:**
-1. Calls Budgeting Agent to establish financial foundation
-2. Calls Program Agent to identify assistance opportunities
-3. Calls Geo-Scout Agent to find suitable neighborhoods
-4. Synthesizes all outputs into cohesive user-facing recommendations
-**Integration:** Coordinates with all specialized agents via LangGraph workflows
-
-### Budgeting Agent
-
-**Input:** User income, financial goals
-**Output:** `{budget_amount, budget_percentage, recommendations}`
-**Rule:** Housing budget = 30% of gross income
-**MCP Integration:** Finance server for budget calculations
 ### Planner Agent
 
 **Role:** Orchestrates the sequential workflow and synthesizes final recommendations
@@ -135,7 +70,6 @@ Each step includes validation, error handling, and performance monitoring to ens
 **Cache:** Median home values per ZIP
 
 ### Program Agent
-### Program Agent
 
 **Input:** Location, income vs AMI, buyer status
 **Output:** `[{name, eligibility, benefit}]`
@@ -152,15 +86,11 @@ This repository is organized to support **containerized agents** and **MCP serve
 ```text
 .
 ├── README.md
-├── gradio_app.py            # Main web application (FastAPI + Gradio)
+├── .env                     # Environment variables
+├── .gitignore               # Ignored files
 ├── docker-compose.yml       # Multi-container orchestration
 ├── Dockerfile               # Main application container
-├── Makefile                 # Build and run commands
-├── pyproject.toml           # Python dependencies
-├── poetry.lock              # Locked dependency versions
 ├── gradio_app.py            # Main web application (FastAPI + Gradio)
-├── docker-compose.yml       # Multi-container orchestration
-├── Dockerfile               # Main application container
 ├── Makefile                 # Build and run commands
 ├── pyproject.toml           # Python dependencies
 ├── poetry.lock              # Locked dependency versions
@@ -179,17 +109,6 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── prompts.py
 │   │   ├── router.py
 │   │   └── state.py
-│   ├── budgeting_agent/     # Budget calculation and recommendations
-│   │   ├── graph.py         # LangGraph workflow definition
-│   │   ├── nodes.py         # Individual workflow nodes
-│   │   ├── prompts.py       # LLM prompts and templates
-│   │   └── state.py         # State management
-│   └── program_agent/       # Assistance program matching
-│   ├── budgeting_agent/     # Budget calculation and recommendations
-│   │   ├── graph.py         # LangGraph workflow definition
-│   │   ├── nodes.py         # Individual workflow nodes
-│   │   ├── prompts.py       # LLM prompts and templates
-│   │   └── state.py         # State management
 │   ├── geoscout_agent/      # Neighborhood discovery
 │   │   ├── __init__.py
 │   │   ├── graph.py
@@ -217,33 +136,19 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │       └── Dockerfile
 │   └── clients/             # MCP client implementations
 │       ├── __init__.py
-├── mcp_kit/                 # MCP toolkit components
-│   ├── __init__.py
-│   ├── adapter.py           # MCP adapter for service integration
-│   ├── tools.py             # LangChain tools for MCP services
-│   ├── README.md            # MCP kit documentation
-│   ├── servers/             # MCP server implementations
-│   │   ├── finance/         # Finance calculation server
-│   │   │   ├── Dockerfile
-│   │   │   └── server.py
-│   │   └── supabase/        # Property data server
-│   │       └── Dockerfile
-│   └── clients/             # MCP client implementations
-│       ├── __init__.py
 │       ├── finance_client.py
 │       └── supabase_client.py
 │
 │
-├── ui_server/               # UI server logic
+├── web_server/              # UI server logic
 │   ├── api.py                   # FastAPI endpoints
 │   ├── chat.py                  # Gradio UI logic
 │
 └── tests/                   # Test suite
-└── tests/                   # Test suite
     ├── __init__.py
     ├── test_planner_agent.py    # Planner agent workflow tests
     └── test_program_agent.py    # Program agent tests
-````
+```
 
 ---
 
@@ -292,8 +197,8 @@ docker compose up --build -d
 
 ### 3. Access the Interface
 
-- **Web Interface**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
+- **Web Interface**: `http://localhost:8000`
+- **API Documentation**: `http://localhost:8000/docs`
 
 ### 4. Run Tests
 
@@ -356,6 +261,8 @@ The system uses **Model Context Protocol (MCP)** to connect agents with external
 - `mcp_kit/tools.py` - LangChain tools for MCP integration
 - `mcp_kit/servers/` - Individual MCP server implementations
 - `mcp_kit/clients/` - MCP client wrappers
+
+[Additional Information](mcp_kit/README.md)
 
 ---
 

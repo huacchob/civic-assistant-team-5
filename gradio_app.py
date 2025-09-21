@@ -2,9 +2,8 @@
 
 import gradio as gr
 from fastapi import FastAPI
-
-from ui_server.api import app
-from ui_server.chat import create_interface
+from web_server.api import app
+from web_server.chat import create_interface
 
 # Mount the Gradio interface to FastAPI
 demo: gr.Blocks = create_interface()

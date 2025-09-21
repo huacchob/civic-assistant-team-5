@@ -1,7 +1,9 @@
 """Prompts for the Planner Agent workflow."""
 
+from typing import Any
 
-def get_comprehensive_analysis_prompt(budgeting_results: dict) -> str:
+
+def get_comprehensive_analysis_prompt(budgeting_results: dict[Any, Any]) -> str:
     """Generate comprehensive LLM prompt for data formatting and analysis"""
     # Extract the actual values from the nested structure
     budget_value: str = (
