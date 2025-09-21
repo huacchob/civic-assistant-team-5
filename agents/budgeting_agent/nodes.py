@@ -7,7 +7,7 @@ from .prompts import get_budget_calculation_prompt
 from .state import BudgetingState
 
 
-async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
+async def budget_calculation_node(state: BudgetingState):
     """Calculate 30% budget from user income"""
     from mcp_kit.tools import calculate_budget
 
@@ -34,7 +34,7 @@ async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
     return state
 
 
-async def loan_qualification_node(state: BudgetingState) -> BudgetingState:
+async def loan_qualification_node(state: BudgetingState):
     """Calculate maximum loan amount based on income and credit score"""
     from mcp_kit.tools import loan_qualification
 
