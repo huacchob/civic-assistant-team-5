@@ -1,12 +1,14 @@
+"""Utility tools for handling secrets."""
+
 import os
 from pathlib import Path
 
 
-def load_secrets():
+def load_secrets() -> None:
     """Load secrets into environment variables."""
     creds_file: Path = Path(__file__).parent.parent.joinpath(".env")
     with open(file=creds_file, mode="r", encoding="utf-8") as file:
-        lines = file.readlines()
+        lines: list[str] = file.readlines()
         for line in lines:
-            key, value = line.strip().split("=", 1)
+            key, value = line.strip().split(sep="=", maxsplit=1)
             os.environ[key] = value

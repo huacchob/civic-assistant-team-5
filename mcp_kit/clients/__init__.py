@@ -1,1 +1,1 @@
-# MCP Clients package
+"""MCP Clients package."""

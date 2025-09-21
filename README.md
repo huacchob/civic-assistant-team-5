@@ -179,18 +179,11 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── prompts.py
 │   │   ├── router.py
 │   │   └── state.py
-│   └── program_agent/       # Assistance program matching
 │   ├── budgeting_agent/     # Budget calculation and recommendations
 │   │   ├── graph.py         # LangGraph workflow definition
 │   │   ├── nodes.py         # Individual workflow nodes
 │   │   ├── prompts.py       # LLM prompts and templates
 │   │   └── state.py         # State management
-│   ├── geoscout_agent/      # Neighborhood discovery
-│   │   ├── __init__.py
-│   │   ├── graph.py
-│   │   ├── nodes.py
-│   │   ├── prompts.py
-│   │   └── state.py
 │   └── program_agent/       # Assistance program matching
 │       ├── __init__.py
 │       ├── graph.py
@@ -228,108 +221,15 @@ This repository is organized to support **containerized agents** and **MCP serve
 │       ├── finance_client.py
 │       └── supabase_client.py
 │
-└── tests/                   # Test suite
+│
+├── ui_server/               # UI server logic
+│   ├── api.py                   # FastAPI endpoints
+│   ├── chat.py                  # Gradio UI logic
+│
 └── tests/                   # Test suite
     ├── __init__.py
     ├── test_planner_agent.py    # Planner agent workflow tests
     └── test_program_agent.py    # Program agent tests
-````
-
----
-
-## Quick Start
-
-### 1. Environment Setup
-
-Create a `.env` file with your API keys:
-
-```bash
-OPENAI_API_KEY=your_openai_api_key_here
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_KEY=your_supabase_anon_key_here
-```
-
-### 2. Start the Application
-
-```bash
-# Start all services
-make start
-
-# Or manually
-docker compose up --build -d
-```
-
-### 3. Access the Interface
-
-- **Web Interface**: http://localhost:8000
-- **API Documentation**: http://localhost:8000/docs
-
-### 4. Run Tests
-
-```bash
-# Test the planner agent workflow
-make test-planner
-
-# Test individual agents
-python tests/test_program_agent.py
-```
-
-### 5. Stop Services
-
-```bash
-make stop
-```
-
----
-
-## Available Commands
-
-| Command             | Description             |
-| ------------------- | ----------------------- |
-| `make start`        | Start MAREA application |
-| `make stop`         | Stop MAREA application  |
-| `make logs`         | Show container logs     |
-| `make test-planner` | Run planner agent test  |
-| `make clean`        | Clean up files          |
-
----
-
-## Web Interface
-
-The system provides a modern web interface built with **FastAPI + Gradio**:
-
-- **Input Form**: Enter income, credit score, target home ID, and zip code
-- **Real-time Analysis**: Get instant financial analysis and recommendations
-- **API Access**: RESTful API for programmatic integration
-- **Example Data**: Pre-loaded examples for quick testing
-
-### API Endpoints
-
-- `POST /analyze` - Analyze user financial profile
-- `GET /docs` - API documentation
-
----
-
-## MCP Architecture
-
-The system uses **Model Context Protocol (MCP)** to connect agents with external data sources:
-
-- **MCP Adapter**: Central coordinator managing connections to all MCP servers
-- **Finance MCP Server**: Provides budget calculations and financial analysis
-- **Supabase MCP Server**: Supplies property data and neighborhood information
-- **LangChain Tools**: Bridge between agents and MCP services
-
-### Key Components
-
-- `mcp_kit/adapter.py` - MCP connection management
-- `mcp_kit/tools.py` - LangChain tools for MCP integration
-- `mcp_kit/servers/` - Individual MCP server implementations
-- `mcp_kit/clients/` - MCP client wrappers
-  ├── test_planner_agent.py # Planner agent workflow tests
-  └── test_program_agent.py # Program agent tests
-  └── utility/ # Test suite
-  ├── secrets.py # Secrets utility tools
-
 ````
 
 ---
@@ -365,7 +265,7 @@ SUPABASE_PROJECT_REF=your_supabase_project_id
 READONLY_DATABASE_URL=read_only_url
 WALKSCORE_API_KEY=your_walkscore_api
 WALKSCORE_BASE_URL=https://api.walkscore.com/score
-````
+```
 
 ### 2. Start the Application
 
@@ -462,35 +362,6 @@ CREDIT_RANGES = {
 MAX_HOUSING_RATIO = 0.30  # 30% of gross income
 MIN_READINESS_SCORE = 0.6
 ```
-
----
-
-## Environment Setup
-
-Create a `.env` file in the project root with the following required keys:
-
-```bash
-# OpenAI API Key (required for LLM functionality)
-OPENAI_API_KEY=your_openai_api_key_here
-
-# Supabase Configuration (required for property data)
-SUPABASE_URL=your_supabase_url_here
-SUPABASE_KEY=your_supabase_anon_key_here
-
-# LangSmith Configuration (optional, for monitoring)
-LANGSMITH_API_KEY=your_langsmith_api_key_here
-LANGSMITH_TRACING=true
-LANGSMITH_PROJECT=civic-assistant-team-5
-```
-
-### Required Keys:
-
-- `OPENAI_API_KEY`: For LLM model access
-- `SUPABASE_URL` & `SUPABASE_KEY`: For property data access
-
-### Optional Keys:
-
-- LangSmith keys for monitoring and tracing
 
 ---
 

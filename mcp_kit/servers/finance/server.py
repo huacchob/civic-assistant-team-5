@@ -1,10 +1,17 @@
+"""MCP Finance Server."""
+
+from typing import Any
+
 from fastmcp import FastMCP
 
-server = FastMCP("Finance")
+server: FastMCP[Any] = FastMCP(name="Finance")
 
-@server.tool()  # ← Registers tool, but server not running yet
+
+@server.tool()
 def calculate_budget(income: float) -> float:
+    """Calculate 30% budget from income"""
     return income * 0.30
+
 
 @server.tool()
 def loan_qualification(income: float, credit_score: int) -> float:
@@ -19,11 +26,9 @@ def loan_qualification(income: float, credit_score: int) -> float:
         multiplier = 3.5
     else:
         multiplier = 2.5
-    
+
     return income * multiplier
+
 
 if __name__ == "__main__":
     server.run(transport="stdio")
-
-
-    
