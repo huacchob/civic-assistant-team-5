@@ -185,6 +185,18 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   │   ├── prompts.py       # LLM prompts and templates
 │   │   └── state.py         # State management
 │   └── program_agent/       # Assistance program matching
+│   ├── budgeting_agent/     # Budget calculation and recommendations
+│   │   ├── graph.py         # LangGraph workflow definition
+│   │   ├── nodes.py         # Individual workflow nodes
+│   │   ├── prompts.py       # LLM prompts and templates
+│   │   └── state.py         # State management
+│   ├── geoscout_agent/      # Neighborhood discovery
+│   │   ├── __init__.py
+│   │   ├── graph.py
+│   │   ├── nodes.py
+│   │   ├── prompts.py
+│   │   └── state.py
+│   └── program_agent/       # Assistance program matching
 │       ├── __init__.py
 │       ├── graph.py
 │       ├── nodes.py
@@ -226,6 +238,7 @@ This repository is organized to support **containerized agents** and **MCP serve
 │   ├── api.py                   # FastAPI endpoints
 │   ├── chat.py                  # Gradio UI logic
 │
+└── tests/                   # Test suite
 └── tests/                   # Test suite
     ├── __init__.py
     ├── test_planner_agent.py    # Planner agent workflow tests
