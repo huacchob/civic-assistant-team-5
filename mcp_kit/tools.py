@@ -24,6 +24,13 @@ async def loan_qualification(income: float, credit_score: int) -> dict[str, Any]
     )
     return {"max_loan": result}
 
+@tool
+async def get_properties(loan_result: float, zip_code: str) -> list[tuple, Any]:
+    """Fetch property listings from RentCast API based on max price and zip code using Finance MCP"""
+    result = await mcp_adapter.finance.get_properties(loan_result, zip_code)
+    return {"property_listings": result}
+
+
 
 @tool
 async def query_home_by_id(home_id: int) -> dict[str, Any]:
@@ -37,3 +44,4 @@ async def get_transit_score(zip_code: str) -> dict[str, Any]:
     """Get transit score and summary for a specific location using Location MCP"""
     result: Any = await mcp_adapter.location.get_transit_score(zip_code=zip_code)
     return {"transit_score": result}
+

@@ -5,7 +5,7 @@ from typing import Any
 from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from .nodes import budget_calculation_node, loan_qualification_node
+from .nodes import budget_calculation_node, loan_qualification_node, property_listing_node
 from .state import BudgetingState
 
 
@@ -18,11 +18,13 @@ def initialize_graph() -> StateGraph:
     # Add nodes
     graph.add_node(node="budget_calculation", action=budget_calculation_node)
     graph.add_node(node="loan_qualification", action=loan_qualification_node)
+    graph.add_node(node="property_listing", action=property_listing_node)
 
     # Set up the workflow: budget calculation -> loan qualification
     graph.set_entry_point(key="budget_calculation")
-    graph.add_edge(start_key="budget_calculation", end_key="loan_qualification")
-    graph.set_finish_point(key="loan_qualification")
+    graph.add_edge("budget_calculation", "loan_qualification")
+    graph.add_edge("loan_qualification", "property_listing")
+    graph.set_finish_point(key="property_listing")
 
     return graph
 

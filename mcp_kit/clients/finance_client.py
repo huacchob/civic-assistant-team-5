@@ -1,6 +1,7 @@
 """MCP Finance Client."""
 
 import asyncio
+import os
 
 from mcp import ClientSession, ListToolsResult, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -9,6 +10,7 @@ from utility.secrets import load_secrets
 
 # Load environment variables from .env file
 load_secrets()
+
 
 
 class FinanceClient:
@@ -92,6 +94,16 @@ class FinanceClient:
             arguments={"income": income, "credit_score": credit_score},
         )
         return self._parse_loan_data(result=result)
+
+    async def get_properties(self, loan_result: float, zip_code: str):
+        """Fetch property listings from RentCast API based on max price and zip code"""
+        if not self.session:
+            raise RuntimeError("Not connected. Call connect() first.")
+        result = await self.session.call_tool(
+            name="get_properties", 
+            arguments= {"loan_result": loan_result, "zip_code": zip_code}
+        )
+        return result  # Assuming the tool returns structured data directly    
 
     def _parse_budget_data(self, result, income):
         """Parse MCP result and return clean budget data"""

@@ -52,3 +52,19 @@ async def loan_qualification_node(state: BudgetingState) -> BudgetingState:
     state["loan_result"] = loan_result
 
     return state
+
+
+async def property_listing_node(state: BudgetingState) -> BudgetingState:
+    """Fetch property listings based on max loan amount and zip code"""
+    from mcp_kit.tools import get_properties
+
+    # Call the get_properties tool
+    properties_result: Any = await get_properties.ainvoke(
+        input={"loan_result": state["loan_result"]['max_loan']['max_loan'], "zip_code": state["zip_code"]}
+    )
+    print(f"Property listings result: {properties_result}")
+
+    # Store the property listings
+    state["property_listings"] = properties_result
+
+    return state
