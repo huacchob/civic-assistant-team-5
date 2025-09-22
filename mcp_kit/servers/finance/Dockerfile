@@ -10,6 +10,7 @@ RUN pip install fastmcp
 # Copy application code
 COPY utility/ ./utility/
 COPY mcp_kit/servers/finance/ .
+COPY .env .
 
 # Create non-root user for security
 RUN useradd -m mcpuser && chown -R mcpuser:mcpuser /app
