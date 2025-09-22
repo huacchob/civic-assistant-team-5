@@ -22,8 +22,8 @@ def initialize_graph() -> StateGraph:
 
     # Set up the workflow: budget calculation -> loan qualification
     graph.set_entry_point(key="budget_calculation")
-    graph.add_edge("budget_calculation", "loan_qualification")
-    graph.add_edge("loan_qualification", "property_listing")
+    graph.add_edge(start_key="budget_calculation", end_key="loan_qualification")
+    graph.add_edge(start_key="loan_qualification", end_key="property_listing")
     graph.set_finish_point(key="property_listing")
 
     return graph

@@ -1,5 +1,3 @@
-"""Utility tools for handling secrets."""
-
 import os
 from pathlib import Path
 

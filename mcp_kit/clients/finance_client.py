@@ -6,7 +6,7 @@ import os
 from mcp import ClientSession, ListToolsResult, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp.types import CallToolResult
-from utility.secrets import load_secrets
+from utility.sec_vars import load_secrets
 
 # Load environment variables from .env file
 load_secrets()

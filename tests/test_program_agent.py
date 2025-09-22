@@ -3,7 +3,7 @@
 import pytest
 
 from agents.program_agent.graph import build_program_graph
-from utility.secrets import load_secrets
+from utility.sec_vars import load_secrets
 
 load_secrets()
 

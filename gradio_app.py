@@ -3,7 +3,7 @@
 import gradio as gr
 from fastapi import FastAPI
 
-from utility.secrets import load_secrets
+from utility.sec_vars import load_secrets
 from web_server.api import app
 from web_server.chat import create_interface
 

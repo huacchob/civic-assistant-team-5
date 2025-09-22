@@ -8,41 +8,17 @@ import httpx
 import os
 import utility
 from utility.sec_vars import load_secrets
+import pdb
 
 
 # Load environment variables from .env file
 load_secrets()
 
-server: FastMCP[Any] = FastMCP(name="Finance")
 
-
-@server.tool()
-def calculate_budget(income: float) -> float:
-    """Calculate 30% budget from income"""
-    return income * 0.30
-
-
-@server.tool()
-def loan_qualification(income: float, credit_score: int) -> float:
-    """Calculate maximum loan amount based on income and credit score"""
-    if credit_score >= 750:
-        multiplier = 5.0
-    elif credit_score >= 700:
-        multiplier = 4.5
-    elif credit_score >= 650:
-        multiplier = 4.0
-    elif credit_score >= 580:
-        multiplier = 3.5
-    else:
-        multiplier = 2.5
-
-    return income * multiplier
-
-@server.tool() # Call rentcast API to get property listings
 def get_properties(loan_result: float, zip_code: str) -> list[dict]:
     """Fetch property listings from RentCast API based on max price, zip code, and credit score"""
     
-    url = f'https://api.rentcast.io/v1/listings/sale?zipcode={zip_code}&status=Active&price={loan_result}&limit=3'
+    url = f'https://api.rentcast.io/v1/listings/sale?city=Philadelphia&status=Active&priceMax=250000&limit=3'
 
     try:
 
@@ -59,6 +35,7 @@ def get_properties(loan_result: float, zip_code: str) -> list[dict]:
             res = client.get(url, headers=headers, timeout=10.0)
             res.raise_for_status()
             data = res.json()
+            pdb.set_trace()
 
         if data and "listings" in data:
             l = {
@@ -86,4 +63,4 @@ def get_properties(loan_result: float, zip_code: str) -> list[dict]:
 
 
 if __name__ == "__main__":
-    server.run(transport="stdio")
+    get_properties(1300.00, '19150')
