@@ -17,7 +17,11 @@ class GeoScoutState(TypedDict):
 
     # Transit node output
     transit_score: int
-    transit_desc: str
     transit_summary: str
-    lat: float
-    lon: float
+
+    # Crime node output
+    crime_summary: str
+    crime_score: int
+
+    # Synthesizer node output
+    total_summary: str

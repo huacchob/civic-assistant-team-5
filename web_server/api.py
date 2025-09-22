@@ -1,11 +1,15 @@
 """FastAPI for the MAREA project."""
 
+from logging import Logger
 from typing import Any
 
 from fastapi import FastAPI
 
 from agents.planner_agent.graph import run_planner_agent
 from mcp_kit.tools import mcp_adapter
+from utility.logs import get_logger
+
+logger: Logger = get_logger(name=__name__)
 
 app = FastAPI(title="MAREA API")
 
@@ -15,8 +19,8 @@ app = FastAPI(title="MAREA API")
 async def startup() -> None:
     """Connect to all MCPs on startup."""
     await mcp_adapter.connect_all()
-    print(await mcp_adapter.check_running())
-    print("MCP connections established")
+    logger.info(await mcp_adapter.check_running())
+    logger.info("MCP connections established")
 
 
 @app.post(path="/analyze")

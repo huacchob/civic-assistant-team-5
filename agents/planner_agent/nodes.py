@@ -1,19 +1,23 @@
 """Nodes for the Planner Agent workflow."""
 
+from logging import Logger
 from typing import Any
 
 from langchain_core.messages.base import BaseMessage
 
 from agents.budgeting_agent.graph import run_budgeting_agent
+from agents.geoscout_agent.graph import run_geoscout_agent
+from agents.planner_agent.prompts import get_comprehensive_analysis_prompt
+from agents.planner_agent.state import PlannerState
+from utility.logs import get_logger
 
-from .prompts import get_comprehensive_analysis_prompt
-from .state import PlannerState
+logger: Logger = get_logger(name=__name__)
 
 
 async def run_budgeting_agent_node(state: PlannerState) -> PlannerState:
     """Call the budgeting agent and store results in state"""
     current_step = state.get("current_step", "unknown")
-    print(f"STEP: {current_step} -> Calling budgeting agent...")
+    logger.info(f"STEP: {current_step} -> Calling budgeting agent...")
 
     # Extract user data from state
     user_data = {
@@ -38,7 +42,7 @@ async def run_budgeting_agent_node(state: PlannerState) -> PlannerState:
 async def run_geoscout_agent_node(state: PlannerState) -> PlannerState:
     """Call the geoscout agent and store results in state"""
     current_step = state.get("current_step", "unknown")
-    print(f"STEP: {current_step} -> Calling geoscout agent...")
+    logger.info(f"STEP: {current_step} -> Calling geoscout agent...")
 
     # Extract user data from state
     user_data: dict[str, Any] = {
@@ -48,8 +52,8 @@ async def run_geoscout_agent_node(state: PlannerState) -> PlannerState:
         "zip_code": state["zip_code"],
     }
 
-    # Call the budgeting agent
-    geoscout_results: dict[str, Any] | Any = await run_budgeting_agent(
+    # Call the geoscout agent
+    geoscout_results: dict[str, Any] | Any = await run_geoscout_agent(
         user_data=user_data
     )
 
@@ -63,7 +67,7 @@ async def run_geoscout_agent_node(state: PlannerState) -> PlannerState:
 async def synthesis_node(state: PlannerState) -> PlannerState:
     """Synthesize all agent results into final analysis"""
     current_step: str = state.get("current_step", "unknown")
-    print(f"STEP: {current_step} -> Generating final analysis...")
+    logger.info(f"STEP: {current_step} -> Generating final analysis...")
 
     from langchain_openai import ChatOpenAI
 
@@ -72,7 +76,7 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
     budgeting_results: dict[str, Any] | None = state.get("budgeting_agent_results", {})
 
     if budgeting_results:
-        print("   Calling LLM for analysis...")
+        logger.info("   Calling LLM for analysis...")
         # Use LLM to provide comprehensive analysis
         model = ChatOpenAI(
             model="gpt-4o-mini",
@@ -88,9 +92,9 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
         try:
             response: BaseMessage = await model.ainvoke(input=analysis_prompt)
             analysis: Any = response.content
-            print("   LLM analysis completed")
+            logger.info("   LLM analysis completed")
         except Exception as e:
-            print(f"   LLM analysis failed: {e}")
+            logger.info(f"   LLM analysis failed: {e}")
             analysis = f"Analysis unavailable due to error: {str(e)}"
     else:
         analysis = "No budgeting results available for analysis."

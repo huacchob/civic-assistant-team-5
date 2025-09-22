@@ -1,12 +1,16 @@
 """Nodes for the Budgeting Agent workflow."""
 
+from logging import Logger
 from typing import Any
 
 from langchain_core.messages.base import BaseMessage
 from langchain_openai import ChatOpenAI
 
-from .prompts import get_budget_calculation_prompt
-from .state import BudgetingState
+from agents.budgeting_agent.prompts import get_budget_calculation_prompt
+from agents.budgeting_agent.state import BudgetingState
+from utility.logs import get_logger
+
+logger: Logger = get_logger(name=__name__)
 
 
 async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
@@ -17,7 +21,7 @@ async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
     budget_result: Any = await calculate_budget.ainvoke(
         input={"income": state["income"]}
     )
-    print(f"Budget calculation result: {budget_result}")
+    logger.info(f"Budget calculation result: {budget_result}")
 
     model = ChatOpenAI(model="gpt-4o-mini")
 
@@ -27,7 +31,7 @@ async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
     )
 
     response: BaseMessage = await model.ainvoke(input=prompt)
-    print(f"Model response: {response.content}")
+    logger.info(f"Model response: {response.content}")
 
     # Store both the tool result and the model's explanation
     state["budget_result"] = {
@@ -46,7 +50,7 @@ async def loan_qualification_node(state: BudgetingState) -> BudgetingState:
     loan_result: Any = await loan_qualification.ainvoke(
         input={"income": state["income"], "credit_score": state["credit_score"]}
     )
-    print(f"Loan qualification result: {loan_result}")
+    logger.info(f"Loan qualification result: {loan_result}")
 
     # Store just the raw tool result
     state["loan_result"] = loan_result

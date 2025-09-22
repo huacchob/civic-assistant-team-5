@@ -1,11 +1,15 @@
 """Main Gradio UI for the MAREA project."""
 
+from logging import Logger
 from typing import Any
 
 import gradio as gr
 
 from agents.planner_agent.graph import run_planner_agent
 from utility.formatter import fmt_money
+from utility.logs import get_logger
+
+logger: Logger = get_logger(name=__name__)
 
 
 def format_planner_results(result: Any) -> str:
@@ -123,7 +127,7 @@ async def run_planner_with_ui(
             "current_debt": current_debt_val,
         }
 
-        print(f"[MAREA] User input received: {user_data}")
+        logger.info(f"[MAREA] User input received: {user_data}")
 
         # ENTRY POINT: Call the main planner agent logic
         result: Any = await run_planner_agent(user_data=user_data)

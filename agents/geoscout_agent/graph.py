@@ -2,12 +2,13 @@
 
 from typing import Any
 
-from langgraph.graph import START, StateGraph
+from langgraph.graph import END, START, StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
 from agents.geoscout_agent.nodes import (
     node_commute_score,
     node_crime_rate,
+    node_synthesizer,
 )
 from agents.geoscout_agent.state import GeoScoutState
 
@@ -19,10 +20,13 @@ def initialize_graph() -> GeoScoutState:
     # Register nodes
     graph.add_node(node="node_commute_score", action=node_commute_score)
     graph.add_node(node="node_crime_rate", action=node_crime_rate)
+    graph.add_node(node="node_synthesizer", action=node_synthesizer)
 
     # Start -> init, then route
     graph.add_edge(start_key=START, end_key="node_commute_score")
     graph.add_edge(start_key="node_commute_score", end_key="node_crime_rate")
+    graph.add_edge(start_key="node_crime_rate", end_key="node_synthesizer")
+    graph.add_edge(start_key="node_synthesizer", end_key=END)
 
     return graph
 
@@ -43,11 +47,11 @@ async def run_geoscout_agent(user_data: dict[Any, Any]) -> dict[str, Any] | Any:
         "step_count": 0,
         "error_count": 0,
         "zip_code": user_data.get("zip_code", None),
-        "transit_score": "",
-        "transit_desc": "",
+        "transit_score": 0,
         "transit_summary": "",
-        "lat": 0.0,
-        "lon": 0.0,
+        "crime_summary": "",
+        "crime_score": 0,
+        "total_summary": "",
     }
 
     # Create and run the graph

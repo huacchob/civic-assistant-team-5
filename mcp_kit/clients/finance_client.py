@@ -1,12 +1,16 @@
 """MCP Finance Client."""
 
 import asyncio
+from logging import Logger
 
 from mcp import ClientSession, ListToolsResult, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp.types import CallToolResult
 
+from utility.logs import get_logger
 from utility.sec_vars import load_secrets
+
+logger: Logger = get_logger(name=__name__)
 
 # Load environment variables from .env file
 load_secrets()
@@ -40,7 +44,7 @@ class FinanceClient:
         self.session = await self._session_context.__aenter__()
 
         await self.session.initialize()
-        print("Connected to Finance MCP server")
+        logger.info("Connected to Finance MCP server")
 
     async def disconnect(self) -> None:
         """Close the persistent connection"""
@@ -66,7 +70,7 @@ class FinanceClient:
         self.session = None
         self._session_context = None
         self._stdio_context = None
-        print("Disconnected from Finance MCP server")
+        logger.info("Disconnected from Finance MCP server")
 
     async def get_tools(self) -> list[str]:
         """Get available tools"""
