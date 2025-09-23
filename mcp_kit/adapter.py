@@ -1,11 +1,11 @@
 from typing import Any
 
-from .clients.finance_client import FinanceClient
-from .clients.location_client import LocationClient
-from .clients.supabase_client import SupabaseClient
+from mcp_kit.clients.finance_client import FinanceClient
+from mcp_kit.clients.location_client import LocationClient
+from mcp_kit.clients.supabase_client import SupabaseClient
 
 
-class adapter:
+class Adapter:
     def __init__(self) -> None:
         self.supabase = SupabaseClient()
         self.finance = FinanceClient()

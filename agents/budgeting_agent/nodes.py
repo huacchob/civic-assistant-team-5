@@ -1,9 +1,13 @@
 """Nodes for the Budgeting Agent workflow."""
 
+from logging import Logger
 from typing import Any
 
 from agents.budgeting_agent.state import BudgetingState
 from mcp_kit.tools import loan_qualification, query_price_data_by_zip_and_units
+from utils.convenience import get_logger
+
+logger: Logger = get_logger(name=__name__)
 
 
 async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
@@ -14,7 +18,7 @@ async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
     budget_result: Any = await calculate_budget.ainvoke(
         input={"income": state["income"]}
     )
-    print(f"Budget calculation result: {budget_result}")
+    logger.info(f"Budget calculation result: {budget_result}")
 
     # Extract specific values
     state["monthly_budget"] = budget_result.get("budget", 0)
@@ -30,7 +34,7 @@ async def loan_qualification_node(state: BudgetingState) -> BudgetingState:
     loan_result: Any = await loan_qualification.ainvoke(
         input={"income": state["income"], "credit_score": state["credit_score"]}
     )
-    print(f"Loan qualification result: {loan_result}")
+    logger.info(f"Loan qualification result: {loan_result}")
 
     # Extract specific values
     state["max_loan"] = loan_result.get("max_loan", 0)
@@ -49,7 +53,7 @@ async def price_data_query_node(state: BudgetingState) -> BudgetingState:
             "residential_units": state["residential_units"],
         }
     )
-    print(f"Price data query result: {price_data_result}")
+    logger.info(f"Price data query result: {price_data_result}")
 
     # Store just the raw tool result
     state["price_data"] = price_data_result

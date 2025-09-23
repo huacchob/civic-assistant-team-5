@@ -1,5 +1,6 @@
 """Nodes for the Program Agent workflow."""
 
+from logging import Logger
 from typing import Any
 
 from langchain_core.messages.base import BaseMessage
@@ -11,8 +12,10 @@ from agents.program_agent.prompts import (
 )
 from agents.program_agent.state import ProgramAgentState
 from mcp_kit.tools import search_programs_rag
-from utils.convenience import get_openai_model
+from utils.convenience import get_logger, get_openai_model
 from utils.embedder import NYProgramsEmbedder
+
+logger: Logger = get_logger(name=__name__)
 
 openai_model: str = get_openai_model()
 
@@ -52,7 +55,7 @@ async def rag_search_programs_node(state: ProgramAgentState) -> ProgramAgentStat
 
         if "error" in rag_result:
             state["program_matcher_results"] = []
-            print(f"RAG search error: {rag_result['error']}")
+            logger.info(f"RAG search error: {rag_result['error']}")
         else:
             # Extract programs from RAG result
             programs = rag_result.get("programs", [])
@@ -60,9 +63,9 @@ async def rag_search_programs_node(state: ProgramAgentState) -> ProgramAgentStat
 
             # Log RAG results (limit to 1 element for brevity)
             if programs:
-                print(f"RAG search result: {programs[:1]}")
+                logger.info(f"RAG search result: {programs[:1]}")
             else:
-                print("RAG search result: No programs found")
+                logger.info("RAG search result: No programs found")
 
     except Exception:
         state["program_matcher_results"] = []
@@ -75,7 +78,7 @@ async def filter_programs_node(state: ProgramAgentState) -> ProgramAgentState:
     """Filter programs using LLM to determine user eligibility"""
     programs = state.get("program_matcher_results", [])
     if not programs:
-        print("No programs to filter")
+        logger.info("No programs to filter")
         state["current_step"] = "filter_complete"
         return state
 
@@ -111,7 +114,7 @@ async def filter_programs_node(state: ProgramAgentState) -> ProgramAgentState:
         state["programs_text"] = programs_text
 
     except Exception as e:
-        print(f"Error in batch filtering: {e}")
+        logger.info(f"Error in batch filtering: {e}")
         # Fallback: include all programs if batch processing fails
         state["filtered_programs"] = programs_text
 

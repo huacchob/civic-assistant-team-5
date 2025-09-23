@@ -1,4 +1,5 @@
 import asyncio
+from logging import Logger
 from pathlib import Path
 from typing import Any, Literal
 
@@ -7,7 +8,9 @@ from langchain_core.messages.base import BaseMessage
 from langchain_openai import ChatOpenAI
 
 from agents.planner_agent.graph import run_planner_agent
-from utils.convenience import get_openai_model
+from utils.convenience import get_logger, get_openai_model
+
+logger: Logger = get_logger(name=__name__)
 
 openai_model: str = get_openai_model()
 
@@ -115,7 +118,7 @@ async def run_planner_with_ui(
             "current_debt": current_debt_val,
         }
 
-        print(f"[MAREA] User input received: {user_data}")
+        logger.info(f"[MAREA] User input received: {user_data}")
 
         # ENTRY POINT: Call the main planner agent logic
         result: Any = await run_planner_agent(user_data=user_data)
@@ -125,7 +128,7 @@ async def run_planner_with_ui(
         global analysis_context
         analysis_context = formatted_result
 
-        print("Analysis complete. Chatbot is now available in the 'Chat' tab.")
+        logger.info("Analysis complete. Chatbot is now available in the 'Chat' tab.")
 
         # Return the formatted result
         return formatted_result

@@ -2,6 +2,7 @@ import asyncio
 import json
 import os
 from contextlib import _AsyncGeneratorContextManager
+from logging import Logger
 from typing import Any
 
 from anyio.streams.memory import MemoryObjectReceiveStream, MemoryObjectSendStream
@@ -10,6 +11,10 @@ from mcp import ClientSession, ListToolsResult, StdioServerParameters
 from mcp.client.stdio import stdio_client
 from mcp.shared.message import SessionMessage
 from mcp.types import CallToolResult
+
+from utils.convenience import get_logger
+
+logger: Logger = get_logger(name=__name__)
 
 # Load environment variables from .env file
 load_dotenv()
@@ -56,7 +61,7 @@ class SupabaseClient:
         self.session: ClientSession = await self._session_context.__aenter__()
 
         await self.session.initialize()
-        print("Connected to Supabase MCP server")
+        logger.info("Connected to Supabase MCP server")
 
     async def disconnect(self) -> None:
         """Close the persistent connection"""
@@ -82,7 +87,7 @@ class SupabaseClient:
         self.session = None
         self._session_context = None
         self._stdio_context = None
-        print("Disconnected from Supabase MCP server")
+        logger.info("Disconnected from Supabase MCP server")
 
     async def get_tools(self) -> list[str]:
         """Get available tools"""
@@ -238,8 +243,8 @@ class SupabaseClient:
             TypeError,
             AttributeError,
         ) as e:
-            print(f"DEBUG: Program RAG search parsing failed with error: {e}")
-            print(f"DEBUG: Content text: {content_text[:200]}...")
+            logger.info(f"DEBUG: Program RAG search parsing failed with error: {e}")
+            logger.info(f"DEBUG: Content text: {content_text[:200]}...")
             return {"error": f"Failed to parse results: {str(e)}"}
 
     def _parse_property_data(self, result: CallToolResult) -> Any:
@@ -301,8 +306,8 @@ class SupabaseClient:
             AttributeError,
         ) as e:
             # Debug: print the error to see what's happening
-            print(f"DEBUG: Parsing failed with error: {e}")
-            print(f"DEBUG: Content text: {content_text[:200]}...")
+            logger.info(f"DEBUG: Parsing failed with error: {e}")
+            logger.info(f"DEBUG: Content text: {content_text[:200]}...")
             # If anything goes wrong, return original result
             return result
 
@@ -377,7 +382,7 @@ class SupabaseClient:
             AttributeError,
         ) as e:
             # Debug: print the error to see what's happening
-            print(f"DEBUG: Average price parsing failed with error: {e}")
-            print(f"DEBUG: Content text: {content_text[:200]}...")
+            logger.info(f"DEBUG: Average price parsing failed with error: {e}")
+            logger.info(f"DEBUG: Content text: {content_text[:200]}...")
             # If anything goes wrong, return original result
             return result

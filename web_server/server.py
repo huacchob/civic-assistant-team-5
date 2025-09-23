@@ -1,11 +1,15 @@
 # Core imports
 from contextlib import _AsyncGeneratorContextManager, asynccontextmanager
+from logging import Logger
 from typing import Any
 
 from fastapi import FastAPI
 
-from agents.planner_agent.graph import run_planner_agent  # Main logic entry point
+from agents.planner_agent.graph import run_planner_agent
 from mcp_kit.tools import mcp_adapter
+from utils.convenience import get_logger
+
+logger: Logger = get_logger(name=__name__)
 
 
 # Lifespan event handler for startup/shutdown
@@ -13,8 +17,8 @@ from mcp_kit.tools import mcp_adapter
 async def lifespan(app: FastAPI) -> _AsyncGeneratorContextManager[Any, Any, Any]:
     # Startup
     await mcp_adapter.connect_all()
-    print(await mcp_adapter.check_running())
-    print("MCP connections established")
+    logger.info(await mcp_adapter.check_running())
+    logger.info("MCP connections established")
     yield
     # Shutdown (if needed)
     pass

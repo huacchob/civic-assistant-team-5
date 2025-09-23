@@ -5,12 +5,12 @@ from typing import Any
 from langgraph.graph import StateGraph
 from langgraph.graph.state import CompiledStateGraph
 
-from .nodes import (
+from agents.budgeting_agent.nodes import (
     budget_calculation_node,
     loan_qualification_node,
     price_data_query_node,
 )
-from .state import BudgetingState
+from agents.budgeting_agent.state import BudgetingState
 
 
 def initialize_graph() -> StateGraph[
