@@ -46,8 +46,8 @@ async def test_location_client_direct():
         # Try to disconnect even if there was an error
         try:
             await client.disconnect()
-        except:
-            pass
+        except Exception as e:
+            raise e
 
 
 if __name__ == "__main__":
