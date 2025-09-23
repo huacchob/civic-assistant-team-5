@@ -37,11 +37,11 @@ class adapter:
 
         return self.connected
 
-    async def check_running(self):
+    async def check_running(self) -> dict[str, Any]:
         """Check which services are available"""
         return self.connected
 
-    async def get_available_tools(self):
+    async def get_available_tools(self) -> dict[str, Any]:
         """Get all available tools from connected services"""
         tools: dict[str, Any] = {}
         if self.connected.get("finance") == "connected":
@@ -52,7 +52,7 @@ class adapter:
             tools["location"] = await self.location.get_tools()
         return tools
 
-    async def disconnect_all(self):
+    async def disconnect_all(self) -> dict[str, Any]:
         """Clean shutdown of all services"""
         # Try supabase
         try:

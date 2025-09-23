@@ -9,7 +9,6 @@ for use with pgvector in Supabase.
 import csv
 import json
 import os
-from _csv import _writer
 from pathlib import Path
 from typing import Any
 
@@ -103,7 +102,7 @@ Benefit: """
     ) -> None:
         """Save processed programs to CSV file."""
         with open(file=output_file, mode="w", newline="", encoding="utf-8") as f:
-            writer: _writer = csv.writer(f)
+            writer = csv.writer(f)
 
             # Write header
             writer.writerow(
@@ -144,7 +143,7 @@ Benefit: """
     ) -> None:
         """Save just the embeddings in a format suitable for pgvector."""
         with open(file=output_file, mode="w", newline="", encoding="utf-8") as f:
-            writer: _writer = csv.writer(f)
+            writer = csv.writer(f)
 
             # Write header
             writer.writerow(row=["program_id", "embedding_vector"])

@@ -161,7 +161,9 @@ class SupabaseClient:
         """
 
         # Execute the query
-        result: CallToolResult = await self.session.call_tool(name="execute_sql", arguments={"query": query_sql})
+        result: CallToolResult = await self.session.call_tool(
+            name="execute_sql", arguments={"query": query_sql}
+        )
 
         # Parse and return clean data
         return self._parse_programs_rag_results(result=result)
@@ -350,13 +352,19 @@ class SupabaseClient:
             return {
                 "zip_code": data.get("zip_code"),
                 "residential_units": data.get("residential_units"),
-                "average_sale_price": round(number=float(data.get("average_sale_price", 0)), 2)
+                "average_sale_price": round(
+                    number=float(data.get("average_sale_price", 0)), ndigits=2
+                )
                 if data.get("average_sale_price")
                 else 0,
-                "min_sale_price": round(number=float(data.get("min_sale_price", 0)), 2)
+                "min_sale_price": round(
+                    number=float(data.get("min_sale_price", 0)), ndigits=2
+                )
                 if data.get("min_sale_price")
                 else 0,
-                "max_sale_price": round(number=float(data.get("max_sale_price", 0)), 2)
+                "max_sale_price": round(
+                    number=float(data.get("max_sale_price", 0)), ndigits=2
+                )
                 if data.get("max_sale_price")
                 else 0,
                 "total_properties": data.get("total_properties", 0),
