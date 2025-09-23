@@ -1,7 +1,10 @@
-import asyncio
+import pytest
+
+from mcp_kit.tools import mcp_adapter
 
 
-async def test_tools(mcp_adapter):
+@pytest.mark.anyio
+async def test_tools() -> None:
     """Test calculate budget and query properties tools"""
     print("\n" + "=" * 60)
     print("TESTING TOOLS")
@@ -11,7 +14,7 @@ async def test_tools(mcp_adapter):
     print("\nTesting Finance Tool:")
     print("-" * 30)
     try:
-        budget = await mcp_adapter.finance.calculate_budget(50000.0)
+        budget = await mcp_adapter.finance.calculate_budget(income=50000.0)
         print("SUCCESS: Budget calculation completed")
         print(f"   Result: {budget}")
     except Exception as e:
@@ -21,14 +24,15 @@ async def test_tools(mcp_adapter):
     print("\nTesting Supabase Tool:")
     print("-" * 30)
     try:
-        properties = await mcp_adapter.supabase.query_home_by_id(7)
+        properties = await mcp_adapter.supabase.query_home_by_id(home_id=7)
         print("SUCCESS: Home query completed")
         print(f"   Result: {properties}")
     except Exception as e:
         print(f"FAILED: {e}")
 
 
-async def test_planner_agent():
+@pytest.mark.anyio
+async def test_planner_agent() -> None:
     """Test entry point for planner agent workflow"""
     print("\n" + "=" * 60)
     print("TESTING PLANNER AGENT")
@@ -55,7 +59,7 @@ async def test_planner_agent():
         # Import and call the planner agent
         from agents.planner_agent.graph import run_planner_agent
 
-        result = await run_planner_agent(mock_user_data)
+        result = await run_planner_agent(user_data=mock_user_data)
         print("SUCCESS: Planner agent completed")
 
         # Format the result for better readability
@@ -102,31 +106,3 @@ async def test_planner_agent():
         traceback.print_exc()
 
     print("\n")
-
-
-async def main():
-    print("Starting MAREA")
-
-    # Import and use the adapter from tools.py
-    from mcp_kit.tools import mcp_adapter
-
-    await mcp_adapter.connect_all()
-    print("Connection status:", await mcp_adapter.check_running())
-
-    # Test the tools
-    await test_tools(mcp_adapter)
-
-    # Test the planner agent
-    await test_planner_agent()
-
-    print("=" * 60)
-    print("ALL TESTS COMPLETED")
-    print("=" * 60)
-    print("\n")
-
-    # Clean up connections
-    await mcp_adapter.disconnect_all()
-
-
-if __name__ == "__main__":
-    asyncio.run(main())

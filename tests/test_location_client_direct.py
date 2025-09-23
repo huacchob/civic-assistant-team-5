@@ -1,14 +1,10 @@
-import asyncio
-import os
-import sys
-
-# Add the project root to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
 
 from mcp_kit.clients.location_client import LocationClient
 
 
-async def test_location_client_direct():
+@pytest.mark.anyio
+async def test_location_client_direct() -> None:
     """Test the LocationClient directly with zip code 10002"""
     print("Testing LocationClient directly with zip code 10002...")
 
@@ -46,13 +42,5 @@ async def test_location_client_direct():
         # Try to disconnect even if there was an error
         try:
             await client.disconnect()
-        except Exception as e:
-            raise e
-
-
-if __name__ == "__main__":
-    print("Starting Direct Location Client Test...")
-    print("=" * 50)
-    asyncio.run(test_location_client_direct())
-    print("=" * 50)
-    print("Test completed!")
+        except:
+            pytest.fail(reason="Failed to disconnect after error.")

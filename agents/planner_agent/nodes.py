@@ -9,7 +9,7 @@ from agents.geoscout_agent.graph import run_geoscout_agent
 from agents.planner_agent.prompts import get_comprehensive_analysis_prompt
 from agents.planner_agent.state import PlannerState
 from agents.program_agent.graph import run_program_agent
-from utils.covenience import get_openai_model
+from utils.convenience import get_openai_model
 
 openai_model: str = get_openai_model()
 

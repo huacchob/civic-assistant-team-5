@@ -14,7 +14,7 @@ from agents.geoscout_agent.prompts import (
 )
 from agents.geoscout_agent.state import GeoScoutState
 from mcp_kit.tools import get_transit_score
-from utils.covenience import get_openai_model
+from utils.convenience import get_openai_model
 
 openai_model: str = get_openai_model()
 

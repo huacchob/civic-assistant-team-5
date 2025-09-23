@@ -11,7 +11,7 @@ from agents.program_agent.prompts import (
 )
 from agents.program_agent.state import ProgramAgentState
 from mcp_kit.tools import search_programs_rag
-from utils.covenience import get_openai_model
+from utils.convenience import get_openai_model
 from utils.embedder import NYProgramsEmbedder
 
 openai_model: str = get_openai_model()

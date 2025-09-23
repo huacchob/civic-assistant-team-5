@@ -1,13 +1,9 @@
-import asyncio
-import os
-import sys
-
-# Add the project root to the Python path
-sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+import pytest
 
 from mcp_kit.tools import get_transit_score, mcp_adapter
 
 
+@pytest.mark.anyio
 async def test_transit_score():
     """Test the get_transit_score tool with zip code 10002"""
     print("Testing get_transit_score with zip code 10002...")
@@ -46,11 +42,3 @@ async def test_transit_score():
         import traceback
 
         traceback.print_exc()
-
-
-if __name__ == "__main__":
-    print("Starting Location Transit Score Test...")
-    print("=" * 50)
-    asyncio.run(test_transit_score())
-    print("=" * 50)
-    print("Test completed!")

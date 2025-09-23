@@ -1,13 +1,13 @@
 import asyncio
 from pathlib import Path
-from typing import Any
+from typing import Any, Literal
 
 import gradio as gr
 from langchain_core.messages.base import BaseMessage
 from langchain_openai import ChatOpenAI
 
 from agents.planner_agent.graph import run_planner_agent
-from utils.covenience import get_openai_model
+from utils.convenience import get_openai_model
 
 openai_model: str = get_openai_model()
 
@@ -61,15 +61,15 @@ Please answer their questions about this analysis, provide clarifications, or he
 
 
 async def run_planner_with_ui(
-    income,
-    credit_score,
-    who_i_am,
-    state,
-    what_looking_for,
-    zip_code,
-    building_class,
-    residential_units,
-    current_debt,
+    income: int,
+    credit_score: int,
+    who_i_am: list[str],
+    state: str,
+    what_looking_for: list[str],
+    zip_code: str,
+    building_class: str,
+    residential_units: int,
+    current_debt: int,
 ) -> Any:
     try:
         if income is None or income == "":
@@ -136,7 +136,9 @@ async def run_planner_with_ui(
         return f"Error: {str(e)}"
 
 
-def handle_chatbot(message: str, history: dict[str, Any]):
+def handle_chatbot(
+    message: str, history: list[dict[str, str]]
+) -> tuple[list[dict[str, str]], Literal[""]]:
     """Handle chatbot interactions with analysis context"""
     global analysis_context
 
@@ -172,7 +174,7 @@ def handle_chatbot(message: str, history: dict[str, Any]):
         response: Any = asyncio.run(
             main=chatbot_response(
                 message=message,
-                old_format_history=old_format_history,
+                history=old_format_history,
                 analysis_context=analysis_context,
             )
         )
@@ -358,15 +360,15 @@ def create_interface() -> gr.Blocks:
                     )
 
             with gr.Tab(label="Chat"):
-                chatbot = gr.Chatbot(
+                chatbot: gr.Chatbot = gr.Chatbot(
                     label="Chat with Assistant", height=400, type="messages"
                 )
-                chatbot_input = gr.Textbox(
+                chatbot_input: gr.Textbox = gr.Textbox(
                     label="Your question",
                     placeholder="Ask me anything about your analysis...",
                     lines=2,
                 )
-                chatbot_send = gr.Button(value="Send", variant="primary")
+                chatbot_send: gr.Button = gr.Button(value="Send", variant="primary")
 
                 # Connect chatbot send button
                 # RemotePdb(host="localhost", port=4444).set_trace()
