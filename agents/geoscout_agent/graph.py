@@ -42,7 +42,7 @@ def compile_graph() -> CompiledStateGraph[
 async def run_geoscout_agent(user_data: dict[Any, Any]) -> dict[str, Any] | Any:
     """Entry point to run the geoscout agent with user data."""
     # User input data
-    initial_state = {
+    initial_state: dict[str, Any] = {
         "current_step": "start",
         "step_count": 0,
         "error_count": 0,

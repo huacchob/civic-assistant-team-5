@@ -1,16 +1,18 @@
+from typing import Any
+
 from .clients.finance_client import FinanceClient
 from .clients.location_client import LocationClient
 from .clients.supabase_client import SupabaseClient
 
 
 class adapter:
-    def __init__(self):
+    def __init__(self) -> None:
         self.supabase = SupabaseClient()
         self.finance = FinanceClient()
         self.location = LocationClient()
-        self.connected = {}
+        self.connected: dict[str, Any] = {}
 
-    async def connect_all(self):
+    async def connect_all(self) -> dict[str, Any]:
         """Connect to all MCP services and report status"""
         # Try supabase
         try:
@@ -41,7 +43,7 @@ class adapter:
 
     async def get_available_tools(self):
         """Get all available tools from connected services"""
-        tools = {}
+        tools: dict[str, Any] = {}
         if self.connected.get("finance") == "connected":
             tools["finance"] = await self.finance.get_tools()
         if self.connected.get("supabase") == "connected":

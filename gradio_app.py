@@ -1,6 +1,7 @@
 # Core imports
 import asyncio
 from contextlib import asynccontextmanager
+from typing import Any
 
 import gradio as gr
 from fastapi import FastAPI
@@ -11,9 +12,9 @@ from mcp_kit.tools import mcp_adapter
 
 
 # Formats the planner agent results for display
-def format_planner_results(result):
+def format_planner_results(result) -> Any:
     # Return only the generated analysis from the agents
-    analysis = result.get("final_analysis", "No analysis available")
+    analysis: Any = result.get("final_analysis", "No analysis available")
     if analysis and analysis != "No analysis available":
         return analysis
     else:
@@ -118,8 +119,8 @@ async def run_planner_with_ui(
         print(f"[MAREA] User input received: {user_data}")
 
         # ENTRY POINT: Call the main planner agent logic
-        result = await run_planner_agent(user_data)
-        formatted_result = format_planner_results(result)
+        result: Any = await run_planner_agent(user_data=user_data)
+        formatted_result = format_planner_results(result=result)
 
         # Store analysis context for chatbot
         global analysis_context
@@ -461,8 +462,10 @@ def create_interface():
                                 )
 
                         response = asyncio.run(
-                            chatbot_response(
-                                message, old_format_history, analysis_context
+                            main=chatbot_response(
+                                message=message,
+                                old_format_history=old_format_history,
+                                analysis_context=analysis_context,
                             )
                         )
                         history.append({"role": "assistant", "content": response})

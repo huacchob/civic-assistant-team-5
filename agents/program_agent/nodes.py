@@ -1,21 +1,24 @@
 """Nodes for the Program Agent workflow."""
 
-from mcp_kit.tools import search_programs_rag
-from utils.embedder import NYProgramsEmbedder
+from typing import Any
 
-from .prompts import (
+from langchain_core.messages.base import BaseMessage
+
+from agents.program_agent.prompts import (
     create_batch_eligibility_prompt,
     format_program_summary,
     format_user_profile,
 )
-from .state import ProgramAgentState
+from agents.program_agent.state import ProgramAgentState
+from mcp_kit.tools import search_programs_rag
+from utils.embedder import NYProgramsEmbedder
 
 
-async def rag_search_programs_node(state: ProgramAgentState):
+async def rag_search_programs_node(state: ProgramAgentState) -> ProgramAgentState:
     """Search for government programs using RAG"""
 
     # Build search query from user data
-    query_parts = []
+    query_parts: list[Any] = []
 
     # Add who_i_am selections
     if state.get("who_i_am"):
@@ -30,18 +33,18 @@ async def rag_search_programs_node(state: ProgramAgentState):
         query_parts.extend(state["what_looking_for"])
 
     # Combine into search query
-    search_query = (
+    search_query: str = (
         " ".join(query_parts) if query_parts else "government assistance programs"
     )
 
     try:
         # Generate embedding for the search query using the embedder
         embedder = NYProgramsEmbedder()
-        query_embedding = embedder.generate_embedding(search_query)
+        query_embedding: list[float] = embedder.generate_embedding(text=search_query)
 
         # Call RAG search tool with the embedding
         rag_result = await search_programs_rag.ainvoke(
-            {"embedding": query_embedding, "limit": 10}
+            input={"embedding": query_embedding, "limit": 10}
         )
 
         if "error" in rag_result:
@@ -65,7 +68,7 @@ async def rag_search_programs_node(state: ProgramAgentState):
     return state
 
 
-async def filter_programs_node(state: ProgramAgentState):
+async def filter_programs_node(state: ProgramAgentState) -> ProgramAgentState:
     """Filter programs using LLM to determine user eligibility"""
     programs = state.get("program_matcher_results", [])
     if not programs:
@@ -79,22 +82,24 @@ async def filter_programs_node(state: ProgramAgentState):
     model = ChatOpenAI(model="gpt-4o-mini", temperature=0, timeout=30, max_retries=2)
 
     # Create user profile using prompt function
-    user_profile = format_user_profile(state)
+    user_profile: str = format_user_profile(state=state)
 
     # Store programs as string for access outside prompt
-    programs_text = "\n\n".join(
+    programs_text: str = "\n\n".join(
         [
-            f"Program {i + 1}:\n{format_program_summary(program)}"
+            f"Program {i + 1}:\n{format_program_summary(program=program)}"
             for i, program in enumerate(programs)
         ]
     )
 
     # Create batch prompt using prompt function
-    batch_prompt = create_batch_eligibility_prompt(user_profile, programs_text)
+    batch_prompt: str = create_batch_eligibility_prompt(
+        user_profile=user_profile, programs_text=programs_text
+    )
 
     try:
-        response = await model.ainvoke(batch_prompt)
-        decisions_text = response.content.strip()
+        response: BaseMessage = await model.ainvoke(input=batch_prompt)
+        decisions_text: str = response.content.strip()
 
         # Store LLM response as filtered programs (LLM already filtered)
         state["filtered_programs"] = decisions_text

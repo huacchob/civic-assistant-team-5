@@ -1,7 +1,7 @@
 """Prompts for the Program Agent workflow."""
 
 
-def format_user_profile(state):
+def format_user_profile(state) -> str:
     """Format user profile for LLM filtering"""
     who_i_am = state.get("who_i_am", [])
     state_location = state.get("state", "")
@@ -25,7 +25,7 @@ def format_user_profile(state):
     """
 
 
-def format_program_summary(program):
+def format_program_summary(program) -> str:
     """Format program details for LLM filtering"""
     return f"""
     Program: {program.get("program_name", "")}
@@ -36,7 +36,7 @@ def format_program_summary(program):
     """
 
 
-def create_batch_eligibility_prompt(user_profile, programs_text):
+def create_batch_eligibility_prompt(user_profile, programs_text) -> str:
     """Create the LLM prompt for batch program eligibility filtering"""
 
     return f"""

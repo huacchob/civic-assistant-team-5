@@ -1,5 +1,5 @@
 import os
-from typing import Any, Dict
+from typing import Any
 
 import httpx
 from dotenv import load_dotenv
@@ -8,7 +8,7 @@ from fastmcp import FastMCP
 # Load environment variables from .env file
 load_dotenv()
 
-server = FastMCP("Location")
+server: FastMCP = FastMCP(name="Location")
 
 
 def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
@@ -19,12 +19,12 @@ def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
         url = f"https://api.zippopotam.us/us/{zip_code}"
 
         with httpx.Client() as client:
-            response = client.get(url, timeout=10.0)
+            response: httpx.Response = client.get(url=url, timeout=10.0)
             response.raise_for_status()
-            data = response.json()
+            data: Any = response.json()
 
         if data and "places" in data and len(data["places"]) > 0:
-            place = data["places"][0]
+            place: Any = data["places"][0]
             lat = float(place["latitude"])
             lon = float(place["longitude"])
             return (lat, lon)
@@ -37,7 +37,7 @@ def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
 
 
 @server.tool()
-def get_transit_score(zip_code: str) -> Dict[str, Any]:
+def get_transit_score(zip_code: str) -> dict[str, Any]:
     """
     Get transit score and summary for a specific ZIP code
 
@@ -45,11 +45,11 @@ def get_transit_score(zip_code: str) -> Dict[str, Any]:
         zip_code: ZIP code for the location
 
     Returns:
-        Dictionary containing transit score, description, and route summary
+        dictionary containing transit score, description, and route summary
     """
     try:
         # Convert ZIP code to lat/lon
-        lat, lon = _get_zip_coordinates(zip_code)
+        lat, lon = _get_zip_coordinates(zip_code=zip_code)
 
         # Get API key
         api_key = os.getenv("WALKSCORE_API_KEY")
@@ -61,16 +61,16 @@ def get_transit_score(zip_code: str) -> Dict[str, Any]:
             }
 
         # Make the Transit API request
-        params = {"lat": lat, "lon": lon, "wsapikey": api_key}
+        params: dict[str, Any] = {"lat": lat, "lon": lon, "wsapikey": api_key}
 
         with httpx.Client() as client:
-            response = client.get(
-                "https://transit.walkscore.com/transit/score/",
+            response: httpx.Response = client.get(
+                url="https://transit.walkscore.com/transit/score/",
                 params=params,
                 timeout=10.0,
             )
             response.raise_for_status()
-            data = response.json()
+            data: Any = response.json()
 
         if data and "transit_score" in data:
             return {

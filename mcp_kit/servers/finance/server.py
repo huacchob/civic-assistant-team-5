@@ -1,6 +1,6 @@
 from fastmcp import FastMCP
 
-server = FastMCP("Finance")
+server: FastMCP = FastMCP(name="Finance")
 
 
 @server.tool()  # ← Registers tool, but server not running yet

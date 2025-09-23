@@ -1,20 +1,22 @@
 """Prompts for the Planner Agent workflow."""
 
+from typing import Any
+
 
 def get_comprehensive_analysis_prompt(state: dict) -> str:
     """Generate comprehensive LLM prompt for data formatting and analysis"""
     # Extract all values from planner state
-    budgeting_results = state.get("budgeting_agent_results", {})
-    program_results = state.get("program_agent_results", {}).get(
+    budgeting_results: dict[str, Any] = state.get("budgeting_agent_results", {})
+    program_results: str = state.get("program_agent_results", {}).get(
         "filtered_programs", None
     )
-    geoscout_results = state.get("geoscout_agent_results", {}).get(
+    geoscout_results: str = state.get("geoscout_agent_results", {}).get(
         "total_summary", None
     )
-    price_data = state.get("price_data", {})
+    price_data: dict[str, Any] = state.get("price_data", {})
 
     # Build the comprehensive prompt
-    prompt = f"""
+    prompt: str = f"""
     You are a financial advisor helping someone with home buying. Based on their profile below, provide a comprehensive analysis:
 
     USER PROFILE
