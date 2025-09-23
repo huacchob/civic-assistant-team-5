@@ -1,5 +1,5 @@
 import os
-from typing import Dict, Any
+from typing import Any, Dict
 
 import httpx
 from dotenv import load_dotenv
@@ -17,12 +17,12 @@ def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
         # Use a free geocoding service - we'll use a simple approach
         # For production, you might want to use Google Maps API or similar
         url = f"https://api.zippopotam.us/us/{zip_code}"
-        
+
         with httpx.Client() as client:
             response = client.get(url, timeout=10.0)
             response.raise_for_status()
             data = response.json()
-        
+
         if data and "places" in data and len(data["places"]) > 0:
             place = data["places"][0]
             lat = float(place["latitude"])
@@ -30,12 +30,10 @@ def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
             return (lat, lon)
         else:
             raise ValueError(f"ZIP code {zip_code} not found")
-            
-    except Exception as e:
+
+    except Exception:
         # Fallback to default coordinates if API fails
         return (40.7505, -73.9934)  # New York, NY
-
-
 
 
 @server.tool()
@@ -52,25 +50,25 @@ def get_transit_score(zip_code: str) -> Dict[str, Any]:
     try:
         # Convert ZIP code to lat/lon
         lat, lon = _get_zip_coordinates(zip_code)
-        
+
         # Get API key
         api_key = os.getenv("WALKSCORE_API_KEY")
         if not api_key:
             return {
                 "error": "Walk Score API key not configured",
                 "status": "error",
-                "zip_code": zip_code
+                "zip_code": zip_code,
             }
-        
+
         # Make the Transit API request
-        params = {
-            "lat": lat,
-            "lon": lon,
-            "wsapikey": api_key
-        }
+        params = {"lat": lat, "lon": lon, "wsapikey": api_key}
 
         with httpx.Client() as client:
-            response = client.get("https://transit.walkscore.com/transit/score/", params=params, timeout=10.0)
+            response = client.get(
+                "https://transit.walkscore.com/transit/score/",
+                params=params,
+                timeout=10.0,
+            )
             response.raise_for_status()
             data = response.json()
 
@@ -82,26 +80,26 @@ def get_transit_score(zip_code: str) -> Dict[str, Any]:
                 "zip_code": zip_code,
                 "lat": lat,
                 "lon": lon,
-                "status": "success"
+                "status": "success",
             }
         else:
             return {
                 "error": "No transit score found for this location",
                 "status": "error",
-                "zip_code": zip_code
+                "zip_code": zip_code,
             }
 
     except httpx.RequestError as e:
         return {
             "error": f"Transit API request failed: {str(e)}",
             "status": "error",
-            "zip_code": zip_code
+            "zip_code": zip_code,
         }
     except Exception as e:
         return {
             "error": f"Unexpected error: {str(e)}",
             "status": "error",
-            "zip_code": zip_code
+            "zip_code": zip_code,
         }
 
 

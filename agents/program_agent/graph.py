@@ -1,23 +1,24 @@
 """Graph for the Program Agent workflow."""
 
 from langgraph.graph import StateGraph
+
+from .nodes import filter_programs_node, rag_search_programs_node
 from .state import ProgramAgentState
-from .nodes import rag_search_programs_node, filter_programs_node
 
 
 def initialize_graph() -> StateGraph:
     """Initialize the program agent graph with model and tools."""
     graph = StateGraph(ProgramAgentState)
-    
+
     # Add nodes
     graph.add_node("rag_search_programs", rag_search_programs_node)
     graph.add_node("filter_programs", filter_programs_node)
-    
+
     # Set up the workflow: RAG search -> filter programs
     graph.set_entry_point("rag_search_programs")
     graph.add_edge("rag_search_programs", "filter_programs")
     graph.set_finish_point("filter_programs")
-        
+
     return graph
 
 
@@ -41,11 +42,11 @@ async def run_program_agent(user_data):
         "current_debt": user_data["current_debt"],
         "residential_units": user_data["residential_units"],
         "program_matcher_results": [],
-        "current_step": "search_programs"
+        "current_step": "search_programs",
     }
-    
+
     # Create and run the graph
     agent = compile_graph()
     result = await agent.ainvoke(initial_state)
-    
+
     return result

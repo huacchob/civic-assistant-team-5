@@ -1,45 +1,34 @@
 # Core imports
 import asyncio
+from contextlib import asynccontextmanager
+
 import gradio as gr
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse
-from contextlib import asynccontextmanager
-from mcp_kit.tools import mcp_adapter
-from agents.planner_agent.graph import run_planner_agent  # Main logic entry point
 from langchain_openai import ChatOpenAI
-import threading
-import webbrowser
-import time
 
-# Utility function for money formatting
-def _fmt_money(x):
-    try:
-        return f"${float(x):,.2f}"
-    except Exception:
-        return "N/A"
+from agents.planner_agent.graph import run_planner_agent  # Main logic entry point
+from mcp_kit.tools import mcp_adapter
+
 
 # Formats the planner agent results for display
 def format_planner_results(result):
     # Return only the generated analysis from the agents
-    analysis = result.get('final_analysis', 'No analysis available')
-    if analysis and analysis != 'No analysis available':
+    analysis = result.get("final_analysis", "No analysis available")
+    if analysis and analysis != "No analysis available":
         return analysis
     else:
         return "Analysis unavailable - please try again."
+
 
 # Chatbot function that uses analysis context
 async def chatbot_response(message, history, analysis_context):
     """Generate chatbot response using the analysis context"""
     if not analysis_context or analysis_context == "No analysis available":
         return "I don't have access to your analysis results yet. Please run the analysis first."
-    
+
     try:
-        model = ChatOpenAI(
-            model="gpt-4o-mini",
-            timeout=30,
-            max_retries=2
-        )
-        
+        model = ChatOpenAI(model="gpt-4o-mini", timeout=30, max_retries=2)
+
         # Create a prompt that includes the analysis context
         system_prompt = f"""You are a helpful real estate assistant. The user has just received an analysis with the following information:
 
@@ -52,27 +41,39 @@ Please answer their questions about this analysis, provide clarifications, or he
         for user_msg, bot_msg in history:
             conversation_history.append({"role": "user", "content": user_msg})
             conversation_history.append({"role": "assistant", "content": bot_msg})
-        
+
         # Add the current user message
         conversation_history.append({"role": "user", "content": message})
-        
+
         # Create the messages for the API
         messages = [{"role": "system", "content": system_prompt}] + conversation_history
-        
+
         response = await model.ainvoke(messages)
         return response.content
-        
+
     except Exception as e:
         return f"I'm sorry, I encountered an error: {str(e)}. Please try again."
+
 
 # Global variable to store analysis context for chatbot
 analysis_context = None
 
+
 # Main UI handler - validates inputs and calls the planner agent
-async def run_planner_with_ui(income, credit_score, who_i_am, state, what_looking_for, zip_code, building_class, residential_units, current_debt):
+async def run_planner_with_ui(
+    income,
+    credit_score,
+    who_i_am,
+    state,
+    what_looking_for,
+    zip_code,
+    building_class,
+    residential_units,
+    current_debt,
+):
     try:
         if income is None or income == "":
-            return "Error: Net Annual Income is required"
+            return "Error: Gross Annual Income is required"
         if credit_score is None or credit_score == "":
             return "Error: Credit Score is required"
         if zip_code is None or zip_code == "":
@@ -83,7 +84,7 @@ async def run_planner_with_ui(income, credit_score, who_i_am, state, what_lookin
             return "Error: Residential Units is required"
         if current_debt is None or current_debt == "":
             return "Error: Current Debt is required"
-        
+
         try:
             income_val = float(income)
             credit_score_val = int(credit_score)
@@ -91,16 +92,16 @@ async def run_planner_with_ui(income, credit_score, who_i_am, state, what_lookin
             current_debt_val = float(current_debt)
         except (ValueError, TypeError):
             return "Error: Invalid numeric values provided"
-        
+
         if income_val <= 0:
-            return "Error: Net Annual Income must be greater than 0"
+            return "Error: Annual Income must be greater than 0"
         if credit_score_val < 300 or credit_score_val > 850:
             return "Error: Credit Score must be between 300 and 850"
         if residential_units_val <= 0:
             return "Error: Residential Units must be greater than 0"
         if current_debt_val < 0:
             return "Error: Current Debt must be 0 or greater"
-        
+
         # Prepare data for the planner agent
         user_data = {
             "income": income_val,
@@ -113,28 +114,34 @@ async def run_planner_with_ui(income, credit_score, who_i_am, state, what_lookin
             "residential_units": residential_units_val,
             "current_debt": current_debt_val,
         }
-        
+
         print(f"[MAREA] User input received: {user_data}")
-        
+
         # ENTRY POINT: Call the main planner agent logic
         result = await run_planner_agent(user_data)
         formatted_result = format_planner_results(result)
-        
+
         # Store analysis context for chatbot
         global analysis_context
         analysis_context = formatted_result
-        
+
         print("Analysis complete. Chatbot is now available in the 'Chat' tab.")
-        
+
         # Return the formatted result
         return formatted_result
     except Exception as e:
-        import traceback; traceback.print_exc()
+        import traceback
+
+        traceback.print_exc()
         return f"Error: {str(e)}"
+
 
 # Creates the Gradio UI interface
 def create_interface():
-    with gr.Blocks(title="MAREA", theme=gr.themes.Monochrome(), css="""
+    with gr.Blocks(
+        title="MAREA",
+        theme=gr.themes.Monochrome(),
+        css="""
         /* LEFT PANEL styling */
         #left-panel {
             background-color: #1a1a1a !important;
@@ -238,21 +245,41 @@ def create_interface():
             vertical-align: middle !important;
             display: inline-block !important;
         }
-    """) as demo:
-        gr.Markdown("# <div style='display: inline-flex; align-items: baseline;'><svg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg' style='display: inline; vertical-align: text-bottom; margin-right: 8px;'><path d='M10 0C4.477 0 0 4.477 0 10 0 14.418 2.865 18.167 6.839 19.489c.5.092.661-.217.661-.482v-1.862c-2.785.606-3.361-1.18-3.361-1.18-.455-1.156-1.111-1.463-1.111-1.463-.908-.62.069-.608.069-.608 1.005.07 1.533 1.031 1.533 1.031.892 1.529 2.341 1.087 2.91.831.089-.646.35-1.087.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.293 2.747-1.025 2.747-1.025.546 1.379.203 2.398.1 2.647.64.699 1.025 1.591 1.025 2.683 0 3.842-2.339 4.687-4.566 4.943.358.309.683.919.683 1.856v2.75c0 .266.18.572.681.475C17.138 18.167 20 14.418 20 10c0-5.523-4.477-10-10-10z' fill='#6B7280'/></svg>MAREA</div>")
-        gr.Markdown("<hr style='border: none; border-top: 1px solid #6B7280; margin: 3px 0 2px 0; width: 40%;'>")
-        gr.Markdown("<span style='color: #6B7280;'>Secure Your Dream Home, Powered by AI.</span>")
-        
+    """,
+    ) as demo:
+        gr.Markdown(
+            "# <div style='display: inline-flex; align-items: baseline;'><svg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg' style='display: inline; vertical-align: text-bottom; margin-right: 8px;'><path d='M10 0C4.477 0 0 4.477 0 10 0 14.418 2.865 18.167 6.839 19.489c.5.092.661-.217.661-.482v-1.862c-2.785.606-3.361-1.18-3.361-1.18-.455-1.156-1.111-1.463-1.111-1.463-.908-.62.069-.608.069-.608 1.005.07 1.533 1.031 1.533 1.031.892 1.529 2.341 1.087 2.91.831.089-.646.35-1.087.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.293 2.747-1.025 2.747-1.025.546 1.379.203 2.398.1 2.647.64.699 1.025 1.591 1.025 2.683 0 3.842-2.339 4.687-4.566 4.943.358.309.683.919.683 1.856v2.75c0 .266.18.572.681.475C17.138 18.167 20 14.418 20 10c0-5.523-4.477-10-10-10z' fill='#6B7280'/></svg>MAREA</div>"
+        )
+        gr.Markdown(
+            "<hr style='border: none; border-top: 1px solid #6B7280; margin: 3px 0 2px 0; width: 40%;'>"
+        )
+        gr.Markdown(
+            "<span style='color: #6B7280;'>Secure Your Dream Home, Powered by AI.</span>"
+        )
+
         # Create tabs
         with gr.Tabs():
             with gr.Tab("Analysis"):
                 with gr.Row():
                     with gr.Column(elem_id="left-panel"):
                         # Financial Information
-                        income = gr.Number(label="Net Annual Income ($)", value=75000, minimum=0, step=1000)
-                        current_debt = gr.Number(label="Current Debt ($)", value=0, minimum=0, step=1000)
-                        credit_score = gr.Number(label="Credit Score", value=720, minimum=300, maximum=850, step=10)
-                        
+                        income = gr.Number(
+                            label="Gross Annual Income ($)",
+                            value=75000,
+                            minimum=0,
+                            step=1000,
+                        )
+                        current_debt = gr.Number(
+                            label="Current Debt ($)", value=0, minimum=0, step=1000
+                        )
+                        credit_score = gr.Number(
+                            label="Credit Score",
+                            value=720,
+                            minimum=300,
+                            maximum=850,
+                            step=10,
+                        )
+
                         # Location Information
                         state = gr.Dropdown(
                             label="State",
@@ -261,26 +288,26 @@ def create_interface():
                                 "New York",
                                 "New Jersey",
                                 "Connecticut",
-                                "Pennsylvania"
+                                "Pennsylvania",
                             ],
-                            value="New York"
+                            value="New York",
                         )
                         zip_code = gr.Textbox(label="Zip Code", value="10009")
-                        
+
                         # Who I Am - RAG Keywords
                         who_i_am = gr.CheckboxGroup(
                             label="Who I Am (check all that apply)",
                             choices=[
                                 "Veteran",
-                                "Recent Graduate", 
+                                "Recent Graduate",
                                 "First Time Home Buyer",
                                 "Low Income",
                                 "Senior Citizen",
-                                "Disabled"
+                                "Disabled",
                             ],
-                            value=["First Time Home Buyer"]
+                            value=["First Time Home Buyer"],
                         )
-                        
+
                         # What I'm Looking For - Multi-select
                         what_looking_for = gr.CheckboxGroup(
                             label="What I'm Looking For (check all that apply)",
@@ -289,11 +316,11 @@ def create_interface():
                                 "Low Interest Rate",
                                 "Mortgage Assistance",
                                 "Renovation Programs",
-                                "Affordable Housing"
+                                "Affordable Housing",
                             ],
-                            value=["Down Payment Assistance"]
+                            value=["Down Payment Assistance"],
                         )
-                        
+
                         # Property Information
                         building_class = gr.Dropdown(
                             label="Building Class",
@@ -301,7 +328,7 @@ def create_interface():
                                 "Any - All building types",
                                 "A0 - Cape Cod one family home",
                                 "A1 - One family attached home",
-                                "A2 - One family semi-attached home", 
+                                "A2 - One family semi-attached home",
                                 "A3 - One family detached home",
                                 "A4 - One family attached home (2-3 stories)",
                                 "A5 - One family semi-attached home (2-3 stories)",
@@ -351,51 +378,75 @@ def create_interface():
                                 "O6 - Office building (6+ stories)",
                                 "O7 - Office building (7+ stories)",
                                 "O8 - Office building (8+ stories)",
-                                "O9 - Office building (9+ stories)"
+                                "O9 - Office building (9+ stories)",
                             ],
-                            value="Any - All building types"
+                            value="Any - All building types",
                         )
-                        
+
                         # Property Details
-                        residential_units = gr.Number(label="Residential Units", value=1, minimum=1, step=1)
-                        
+                        residential_units = gr.Number(
+                            label="Residential Units", value=1, minimum=1, step=1
+                        )
+
                         analyze_btn = gr.Button("Analyze", variant="primary", size="lg")
 
                     with gr.Column(elem_id="outer-panel"):
                         output = gr.Markdown(
                             value="<div style='text-align: center; padding: 20px;'><div class='rotating-squares'><div class='square1'></div><div class='square2'></div></div><div style='color: #6b7280; font-size: 14px; font-family: Courier New, monospace;'>Enter your information to get started.</div></div>",
-                            elem_classes=["output-markdown"]
+                            elem_classes=["output-markdown"],
                         )
-                    
+
                     # Connect the analyze button to the main handler
-                    analyze_btn.click(fn=run_planner_with_ui,
-                                      inputs=[income, credit_score, who_i_am, state, what_looking_for, zip_code, building_class, residential_units, current_debt],
-                                      outputs=output)
+                    analyze_btn.click(
+                        fn=run_planner_with_ui,
+                        inputs=[
+                            income,
+                            credit_score,
+                            who_i_am,
+                            state,
+                            what_looking_for,
+                            zip_code,
+                            building_class,
+                            residential_units,
+                            current_debt,
+                        ],
+                        outputs=output,
+                    )
 
             with gr.Tab("Chat"):
-                chatbot = gr.Chatbot(label="Chat with Assistant", height=400, type="messages")
+                chatbot = gr.Chatbot(
+                    label="Chat with Assistant", height=400, type="messages"
+                )
                 chatbot_input = gr.Textbox(
-                    label="Your question", 
+                    label="Your question",
                     placeholder="Ask me anything about your analysis...",
-                    lines=2
+                    lines=2,
                 )
                 chatbot_send = gr.Button("Send", variant="primary")
-                
+
                 def handle_chatbot(message, history):
                     """Handle chatbot interactions with analysis context"""
                     global analysis_context
-                    
+
                     if not message.strip():
                         return history, ""
-                    
-                    if not analysis_context or analysis_context == "No analysis available":
+
+                    if (
+                        not analysis_context
+                        or analysis_context == "No analysis available"
+                    ):
                         history.append({"role": "user", "content": message})
-                        history.append({"role": "assistant", "content": "I don't have access to your analysis results yet. Please run the analysis first."})
+                        history.append(
+                            {
+                                "role": "assistant",
+                                "content": "I don't have access to your analysis results yet. Please run the analysis first.",
+                            }
+                        )
                         return history, ""
-                    
+
                     # Add user message to history
                     history.append({"role": "user", "content": message})
-                    
+
                     # Get bot response
                     try:
                         # Convert history to old format for the chatbot_response function
@@ -404,29 +455,39 @@ def create_interface():
                             if msg["role"] == "user":
                                 old_format_history.append((msg["content"], ""))
                             elif msg["role"] == "assistant" and old_format_history:
-                                old_format_history[-1] = (old_format_history[-1][0], msg["content"])
-                        
-                        response = asyncio.run(chatbot_response(message, old_format_history, analysis_context))
+                                old_format_history[-1] = (
+                                    old_format_history[-1][0],
+                                    msg["content"],
+                                )
+
+                        response = asyncio.run(
+                            chatbot_response(
+                                message, old_format_history, analysis_context
+                            )
+                        )
                         history.append({"role": "assistant", "content": response})
                     except Exception as e:
-                        history.append({"role": "assistant", "content": f"Error: {str(e)}"})
-                    
+                        history.append(
+                            {"role": "assistant", "content": f"Error: {str(e)}"}
+                        )
+
                     return history, ""
-                
+
                 # Connect chatbot send button
                 chatbot_send.click(
                     fn=handle_chatbot,
                     inputs=[chatbot_input, chatbot],
-                    outputs=[chatbot, chatbot_input]
+                    outputs=[chatbot, chatbot_input],
                 )
-                
+
                 # Allow Enter key to send message
                 chatbot_input.submit(
                     fn=handle_chatbot,
                     inputs=[chatbot_input, chatbot],
-                    outputs=[chatbot, chatbot_input]
+                    outputs=[chatbot, chatbot_input],
                 )
     return demo
+
 
 # Lifespan event handler for startup/shutdown
 @asynccontextmanager
@@ -439,8 +500,10 @@ async def lifespan(app: FastAPI):
     # Shutdown (if needed)
     pass
 
+
 # FastAPI app setup
 app = FastAPI(title="MAREA API", lifespan=lifespan)
+
 
 # API endpoint for external access
 @app.post("/analyze")
@@ -456,12 +519,14 @@ async def analyze_endpoint(income: float, credit_score: int, zip_code: str):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+
 # Mount the Gradio interface to FastAPI
 demo = create_interface()
 app = gr.mount_gradio_app(app, demo, path="/")
 
 if __name__ == "__main__":
     import uvicorn
+
     uvicorn.run(app, host="0.0.0.0", port=8000)
 
 # TODO: RAG program agent and PgVector table
