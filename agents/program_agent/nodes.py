@@ -11,7 +11,10 @@ from agents.program_agent.prompts import (
 )
 from agents.program_agent.state import ProgramAgentState
 from mcp_kit.tools import search_programs_rag
+from utils.covenience import get_openai_model
 from utils.embedder import NYProgramsEmbedder
+
+openai_model: str = get_openai_model()
 
 
 async def rag_search_programs_node(state: ProgramAgentState) -> ProgramAgentState:
@@ -79,7 +82,7 @@ async def filter_programs_node(state: ProgramAgentState) -> ProgramAgentState:
     from langchain_openai import ChatOpenAI
 
     # Initialize LLM
-    model = ChatOpenAI(model="gpt-4o-mini", temperature=0, timeout=30, max_retries=2)
+    model = ChatOpenAI(model=openai_model, temperature=0, timeout=30, max_retries=2)
 
     # Create user profile using prompt function
     user_profile: str = format_user_profile(state=state)

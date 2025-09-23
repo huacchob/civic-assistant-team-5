@@ -7,11 +7,14 @@ from langchain_core.messages.base import BaseMessage
 from langchain_openai import ChatOpenAI
 
 from agents.planner_agent.graph import run_planner_agent
+from utils.covenience import get_openai_model
+
+openai_model: str = get_openai_model()
 
 local_dir: Path = Path(__file__).parent
 
 
-def format_planner_results(result) -> Any:
+def format_planner_results(result: Any) -> Any:
     # Return only the generated analysis from the agents
     analysis: Any = result.get("final_analysis", "No analysis available")
     if analysis and analysis != "No analysis available":
@@ -21,13 +24,15 @@ def format_planner_results(result) -> Any:
 
 
 # Chatbot function that uses analysis context
-async def chatbot_response(message: str, history, analysis_context):
+async def chatbot_response(
+    message: str, history: list[tuple[str, str]], analysis_context: Any
+):
     """Generate chatbot response using the analysis context"""
     if not analysis_context or analysis_context == "No analysis available":
         return "I don't have access to your analysis results yet. Please run the analysis first."
 
     try:
-        model = ChatOpenAI(model="gpt-4o-mini", timeout=30, max_retries=2)
+        model = ChatOpenAI(model=openai_model, timeout=30, max_retries=2)
 
         # Create a prompt that includes the analysis context
         system_prompt: str = f"""You are a helpful real estate assistant. The user has just received an analysis with the following information:
@@ -154,7 +159,7 @@ def handle_chatbot(message: str, history: dict[str, Any]):
     # Get bot response
     try:
         # Convert history to old format for the chatbot_response function
-        old_format_history = []
+        old_format_history: list[tuple[str, str]] = []
         for msg in history[:-1]:  # Exclude the current user message
             if msg["role"] == "user":
                 old_format_history.append((msg["content"], ""))

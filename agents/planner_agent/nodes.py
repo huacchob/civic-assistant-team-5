@@ -9,6 +9,9 @@ from agents.geoscout_agent.graph import run_geoscout_agent
 from agents.planner_agent.prompts import get_comprehensive_analysis_prompt
 from agents.planner_agent.state import PlannerState
 from agents.program_agent.graph import run_program_agent
+from utils.covenience import get_openai_model
+
+openai_model: str = get_openai_model()
 
 
 async def run_budgeting_agent_node(state: PlannerState) -> PlannerState:
@@ -105,7 +108,7 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
         print("   Calling LLM for analysis...")
         # Use LLM to provide comprehensive analysis
         model = ChatOpenAI(
-            model="gpt-4o-mini",
+            model=openai_model,
             timeout=30,  # 30 second timeout
             max_retries=2,
         )

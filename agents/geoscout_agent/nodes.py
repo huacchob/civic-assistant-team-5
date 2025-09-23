@@ -14,6 +14,9 @@ from agents.geoscout_agent.prompts import (
 )
 from agents.geoscout_agent.state import GeoScoutState
 from mcp_kit.tools import get_transit_score
+from utils.covenience import get_openai_model
+
+openai_model: str = get_openai_model()
 
 
 async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
@@ -30,7 +33,7 @@ async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
             "transit_summary": transit_score.get("summary", ""),
         }
     )
-    llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = ChatOpenAI(model=openai_model)
     structured_llm = llm.with_structured_output(
         schema=CommuteStructure,
         method="json_mode",
@@ -49,7 +52,7 @@ async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
 
 async def node_crime_rate(state: GeoScoutState) -> GeoScoutState:
     """Calculate maximum loan amount based on income and credit score"""
-    llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = ChatOpenAI(model=openai_model)
     prompt: str = get_crime_score_prompt(zipcode=state["zip_code"])
     structured_llm = llm.with_structured_output(
         schema=CrimeStructure,
@@ -67,7 +70,7 @@ async def node_crime_rate(state: GeoScoutState) -> GeoScoutState:
 
 async def node_synthesizer(state: GeoScoutState) -> GeoScoutState:
     """Calculate maximum loan amount based on income and credit score"""
-    llm = ChatOpenAI(model="gpt-4o-mini")
+    llm = ChatOpenAI(model=openai_model)
     prompt: str = get_synthesizer_prompt(commute_state=state)
     response: BaseMessage = await llm.ainvoke(input=prompt)
     state.update(
