@@ -37,3 +37,6 @@ class PlannerState(TypedDict):
 
     # Planner-specific outputs
     final_analysis: Optional[str]  # Comprehensive synthesis
+
+    # Usage metadata
+    usage_metadata: Optional[dict[str, Any]]

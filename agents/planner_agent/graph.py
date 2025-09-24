@@ -64,6 +64,7 @@ async def run_planner_agent(user_data) -> dict[str, Any] | Any:
         "geoscout_agent_results": None,
         "program_agent_results": None,
         "final_analysis": None,
+        "usage_metadata": {},
     }
 
     # Create and run the graph

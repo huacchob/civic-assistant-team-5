@@ -28,3 +28,4 @@ class ProgramAgentState(TypedDict):
 
     # Workflow control
     current_step: str
+    usage_metadata: Optional[dict[str, Any]]

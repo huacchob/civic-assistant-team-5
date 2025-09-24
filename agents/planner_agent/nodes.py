@@ -4,6 +4,7 @@ from logging import Logger
 from typing import Any
 
 from langchain_core.messages.base import BaseMessage
+from langchain_openai import ChatOpenAI
 
 from agents.budgeting_agent.graph import run_budgeting_agent
 from agents.geoscout_agent.graph import run_geoscout_agent
@@ -11,6 +12,7 @@ from agents.planner_agent.prompts import get_comprehensive_analysis_prompt
 from agents.planner_agent.state import PlannerState
 from agents.program_agent.graph import run_program_agent
 from utils.convenience import get_logger, get_openai_model
+from utils.token_tracking import token_usage_tracking
 
 logger: Logger = get_logger(name=__name__)
 
@@ -28,6 +30,7 @@ async def run_budgeting_agent_node(state: PlannerState) -> PlannerState:
         "credit_score": state["credit_score"],
         "zip_code": state["zip_code"],
         "residential_units": state["residential_units"],
+        "usage_metadata": state.get("usage_metadata"),
     }
 
     # Call the budgeting agent
@@ -42,6 +45,7 @@ async def run_budgeting_agent_node(state: PlannerState) -> PlannerState:
     state["price_data"] = budgeting_results.get("price_data")
 
     state["current_step"] = "budgeting_complete"
+    state["usage_metadata"] = budgeting_results.get("usage_metadata")
 
     return state
 
@@ -62,6 +66,7 @@ async def run_program_agent_node(state: PlannerState) -> PlannerState:
         "building_class": state.get("building_class"),
         "current_debt": state.get("current_debt"),
         "residential_units": state.get("residential_units"),
+        "usage_metadata": state.get("usage_metadata"),
     }
 
     # Call the program agent
@@ -69,6 +74,7 @@ async def run_program_agent_node(state: PlannerState) -> PlannerState:
 
     # Store results in planner state
     state["program_agent_results"] = program_results
+    state["usage_metadata"] = program_results.get("usage_metadata")
 
     state["current_step"] = "program_agent_complete"
 
@@ -85,6 +91,7 @@ async def run_geoscout_agent_node(state: PlannerState) -> PlannerState:
         "income": state["income"],
         "credit_score": state["credit_score"],
         "zip_code": state["zip_code"],
+        "usage_metadata": state.get("usage_metadata"),
     }
 
     # Call the geoscout agent
@@ -92,6 +99,7 @@ async def run_geoscout_agent_node(state: PlannerState) -> PlannerState:
 
     # Store results in state
     state["geoscout_agent_results"] = geoscout_results
+    state["usage_metadata"] = geoscout_results.get("usage_metadata")
     state["current_step"] = "geoscout_complete"
 
     return state
@@ -101,8 +109,6 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
     """Synthesize all agent results into final analysis"""
     current_step: str = state.get("current_step", "unknown")
     logger.info(f"STEP: {current_step} -> Generating final analysis...")
-
-    from langchain_openai import ChatOpenAI
 
     # Get budgeting results to check if we have data
     budgeting_results: dict[str, Any] = state.get("budgeting_agent_results", {})
@@ -121,6 +127,10 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
 
         try:
             response: BaseMessage = await model.ainvoke(input=analysis_prompt)
+            updated_token_usage: dict[str, Any] = token_usage_tracking(
+                token_history=state.get("usage_metadata"),
+                usage_data=response.usage_metadata,
+            )
             analysis: str = response.content
             logger.info("   LLM analysis completed")
         except Exception as e:
@@ -130,6 +140,11 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
         analysis = "No budgeting results available for analysis."
 
     state["final_analysis"] = analysis
+    state["usage_metadata"] = updated_token_usage
     state["current_step"] = "synthesis_complete"
+    logger.info(
+        f"Total token usage for all agents and synthesis: {state['usage_metadata']}"
+    )
+    logger.info("Workflow complete.")
 
     return state
