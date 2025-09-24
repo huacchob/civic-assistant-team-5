@@ -42,13 +42,19 @@ def get_crime_score_prompt(zipcode: int) -> str:
 
     Provide a summary of what this crime rate means for property search.
     Find crime statistics for a given U.S. ZIP code.
-    Return a score from 1 (very low) to 10 (very high) based on the latest reliable data.
+    Return a score from 1 (very low) to 4 (high) based on the latest reliable data.
     Include a summary of the crime situation in the area.
     Cite the source. If no data exists, say so.
 
+    Use the crime index:
+    1 - Very Low
+    2 - Low
+    3 - Moderate
+    4 - High
+
     Return your response in the following JSON format:
     {{
-        "crime_score": int,  # A score from 1 (very low) to 10 (very high)
+        "crime_score": int,  # A score from 1 (very low) to 4 (high)
         "crime_summary": str  # A brief summary of the crime situation in the area
     }}
     """

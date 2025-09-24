@@ -14,11 +14,13 @@ class PlannerState(TypedDict):
     credit_score: Optional[int]
     zip_code: Optional[str]
     residential_units: Optional[int]
+    current_debt: Optional[float]
+
+    # RAG STATE
     who_i_am: Optional[list]  # User identity/status selections
     state: Optional[str]  # State selection
     what_looking_for: Optional[list]  # What they're looking for selections
     building_class: Optional[str]
-    current_debt: Optional[float]
 
     # Agent results (complete states from each agent)
     budgeting_agent_results: Optional[dict[str, Any]]

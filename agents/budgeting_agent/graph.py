@@ -45,7 +45,7 @@ def compile_graph() -> CompiledStateGraph[
     return graph.compile()
 
 
-async def run_budgeting_agent(user_data) -> dict[str, Any] | Any:
+async def run_budgeting_agent(user_data: dict[str, Any]) -> dict[str, Any] | Any:
     """Entry point to run the budgeting agent with user data"""
     # Convert user_data to initial state
     initial_state: dict[str, Any] = {
