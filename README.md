@@ -33,8 +33,8 @@ The system consists of a **Planner Agent** that orchestrates specialized agents:
 
 - **Planner Agent** – orchestrates the sequential workflow and synthesizes final recommendations
 - **Budgeting Agent** – calculates housing affordability and provides budget recommendations
-- **Geo-Scout Agent** – finds neighborhoods within budget, evaluates quality of life
 - **Program Agent** – identifies eligible assistance programs and loans
+- **Geo-Scout Agent** – finds neighborhoods within budget, evaluates quality of life
 
 ---
 
@@ -91,8 +91,7 @@ Each step includes validation, error handling, and performance monitoring to ens
 **Input:** Location, income vs AMI, buyer status  
 **Output:** `[{name, eligibility, benefit}]`  
 **Rule:** Must match profile, no hallucinated programs  
-**Cache:** Programs by AMI bracket + state  
-**HITL:** User confirms eligibility before recommendations
+**Cache:** Programs by AMI bracket + state
 
 ### Geo-Scout Agent
 
@@ -118,46 +117,62 @@ This repository is organized to support **containerized agents** and **MCP serve
 ├── poetry.lock              # Locked dependency versions
 │
 ├── agents/                  # LangGraph agent implementations
-│   ├── budgeting_agent/     # Budget calculation and recommendations
-│   │   ├── graph.py         # LangGraph workflow definition
-│   │   ├── nodes.py         # Individual workflow nodes
-│   │   ├── prompts.py       # LLM prompts and templates
-│   │   └── state.py         # State management
-│   ├── geoscout_agent/      # Neighborhood discovery
-│   │   ├── __init__.py
+│   ├── budgeting_agent/       # Budget calculation and recommendations
+│   │   ├── graph.py             # LangGraph workflow definition
+│   │   ├── nodes.py             # Individual workflow nodes
+│   │   ├── prompts.py           # LLM prompts and templates
+│   │   └── state.py             # State management
+│   ├── planner_agent/       # Orchestrator agent
 │   │   ├── graph.py
 │   │   ├── nodes.py
 │   │   ├── prompts.py
-│   │   ├── router.py
+│   │   └── state.py
+│   ├── geoscout_agent/      # Neighborhood discovery
+│   │   ├── graph.py
+│   │   ├── nodes.py
+│   │   ├── prompts.py
 │   │   └── state.py
 │   └── program_agent/       # Assistance program matching
-│       ├── __init__.py
 │       ├── graph.py
 │       ├── nodes.py
 │       ├── prompts.py
-│       ├── router.py
 │       └── state.py
 │
 ├── mcp_kit/                 # MCP toolkit components
 │   ├── __init__.py
-│   ├── adapter.py           # MCP adapter for service integration
-│   ├── tools.py             # LangChain tools for MCP services
-│   ├── README.md            # MCP kit documentation
-│   ├── servers/             # MCP server implementations
-│   │   ├── finance/         # Finance calculation server
+│   ├── adapter.py             # MCP adapter for service integration
+│   ├── tools.py               # LangChain tools for MCP services
+│   ├── README.md              # MCP kit documentation
+│   ├── servers/               # MCP server implementations
+│   │   ├── finance/             # Finance calculation server
 │   │   │   ├── Dockerfile
 │   │   │   └── server.py
-│   │   └── supabase/        # Property data server
+│   │   ├── location/            # Location services server
+│   │   │   ├── Dockerfile
+│   │   │   └── server.py
+│   │   └── supabase/            # Property data server
 │   │       └── Dockerfile
-│   └── clients/             # MCP client implementations
+│   └── clients/               # MCP client implementations
 │       ├── __init__.py
 │       ├── finance_client.py
+│       ├── location_client.py
 │       └── supabase_client.py
 │
-└── tests/                   # Test suite
-    ├── __init__.py
-    ├── test_planner_agent.py    # Planner agent workflow tests
-    └── test_program_agent.py    # Program agent tests
+├── tests/                   # Test suite
+│   ├── __init__.py
+│   ├── test_langsmith.py
+│   ├── test_location_transit.py
+│   ├── test_tools.py
+│   └── test_vector_query.py
+├── utils/                   # Test suite
+│   ├── convenience.py
+│   ├── embedder.py
+│   ├── ny_programs.json
+│   └── token_tracking.py
+└── web_server/              # Test suite
+    ├── css.txt
+    ├── gr_interface.py
+    ├── server.py
 ```
 
 ---
@@ -252,6 +267,11 @@ Create a `.env` file in the project root with the following required keys:
 ```bash
 # OpenAI API Key (required for LLM functionality)
 OPENAI_API_KEY=your_openai_api_key_here
+OPENAI_MODEL=gpt-4o-mini
+
+# Gemini API Key (required for LLM functionality)
+GOOGLE_API_KEY=your_google_api_key_here
+GEMINI_MODEL=gemini-2.5-flash
 
 # Supabase Configuration (required for property data)
 SUPABASE_URL=your_supabase_url_here
@@ -261,6 +281,21 @@ SUPABASE_KEY=your_supabase_anon_key_here
 LANGSMITH_API_KEY=your_langsmith_api_key_here
 LANGSMITH_TRACING=true
 LANGSMITH_PROJECT=civic-assistant-team-5
+
+# Walkscore variables
+WALKSCORE_API_KEY=your_walkscore_api
+WALKSCORE_BASE_URL=https://api.walkscore.com/score
+
+# Supabase variables
+POSTGRES_DB=postgres
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=password
+POSTGRES_HOST=host
+POSTGRES_PORT=port
+DATABASE_URL=db_url
+SUPABASE_ACCESS_TOKEN=your_supabase_token
+SUPABASE_PROJECT_REF=your_supabase_project_ref
+READONLY_DATABASE_URL=ro_db_url
 ```
 
 ---
@@ -270,7 +305,7 @@ LANGSMITH_PROJECT=civic-assistant-team-5
 - **Sequential agent processing** with clear handoffs
 - **Deterministic calculations** where possible (credit scores, ratios)
 - **Comprehensive caching** for performance
-- **Validation checks** prevent incomplete/not-allowed passed fields
+- **Validation checks** prevent incomplete/not-allowed user input fields
 
 ---
 
