@@ -1,5 +1,5 @@
 ---
-name: Agent Tests
+name: MCP Tests
 
 on:
   push:
@@ -7,7 +7,7 @@ on:
       - "main"
 
 jobs:
-  agent_tests:
+  mcp_tests:
     runs-on: "ubuntu-latest"
     env:
       OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
@@ -46,5 +46,5 @@ jobs:
       - name: "Install dependencies"
         run: "poetry install --no-root"
 
-      - name: "Test Agent Imports"
-        run: 'poetry run python -c ''from agents.budgeting_agent import *; from agents.geoscout_agent import *; from agents.program_agent import *; print("All agents import successfully")'''
+      - name: "MCP Tests"
+        run: "poetry run python -m pytest tests"
