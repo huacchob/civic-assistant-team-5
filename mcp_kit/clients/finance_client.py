@@ -22,7 +22,7 @@ class FinanceClient:
     def __init__(self, container_name="finance-mcp-server") -> None:
         self.container_name: str = container_name
         self.server_params = StdioServerParameters(
-            command="docker", args=["exec", "-i", container_name, "python", "server.py"]
+            command="docker", args=["exec", "-i", container_name, "python", "server.py"],
         )
         self.session = None
         self._stdio_context = None
@@ -44,7 +44,7 @@ class FinanceClient:
         read_stream, write_stream = await self._stdio_context.__aenter__()
 
         self._session_context = ClientSession(
-            read_stream=read_stream, write_stream=write_stream
+            read_stream=read_stream, write_stream=write_stream,
         )
         self.session: ClientSession = await self._session_context.__aenter__()
 
@@ -59,7 +59,7 @@ class FinanceClient:
         try:
             if self._session_context:
                 await self._session_context.__aexit__(
-                    exc_type=None, exc_val=None, exc_tb=None
+                    exc_type=None, exc_val=None, exc_tb=None,
                 )
         except (Exception, asyncio.CancelledError):
             pass  # Ignore cleanup errors
@@ -67,7 +67,7 @@ class FinanceClient:
         try:
             if self._stdio_context:
                 await self._stdio_context.__aexit__(
-                    typ=None, value=None, traceback=None
+                    typ=None, value=None, traceback=None,
                 )
         except (Exception, asyncio.CancelledError):
             pass  # Ignore cleanup errors
@@ -89,12 +89,12 @@ class FinanceClient:
         if not self.session:
             raise RuntimeError("Not connected. Call connect() first.")
         result: CallToolResult = await self.session.call_tool(
-            name="calculate_budget", arguments={"income": income}
+            name="calculate_budget", arguments={"income": income},
         )
         return self._parse_budget_data(result=result, income=income)
 
     async def loan_qualification(
-        self, income: float, credit_score: int
+        self, income: float, credit_score: int,
     ) -> dict[str, Any]:
         """Calculate maximum loan amount based on income and credit score"""
         if not self.session:
@@ -106,7 +106,7 @@ class FinanceClient:
         return self._parse_loan_data(result=result)
 
     def _parse_budget_data(
-        self, result: CallToolResult, income: float
+        self, result: CallToolResult, income: float,
     ) -> dict[str, Any]:
         """Parse MCP result and return clean budget data"""
         if not result or not hasattr(result, "content") or not result.content:

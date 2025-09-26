@@ -25,7 +25,7 @@ gemini_model: str = get_gemini_model()
 async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
     """Calculate maximum loan amount based on income and credit score"""
     transit_score: dict[str, Any] = await get_transit_score.ainvoke(
-        input={"zip_code": state["zip_code"]}
+        input={"zip_code": state["zip_code"]},
     )
     state.update(
         {
@@ -34,7 +34,7 @@ async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
             "error_count": 0,
             "transit_score": transit_score.get("transit_score", 0),
             "transit_summary": transit_score.get("summary", ""),
-        }
+        },
     )
     llm = ChatGoogleGenerativeAI(model=gemini_model, stream_usage=True)
     structured_llm = llm.with_structured_output(
@@ -42,7 +42,7 @@ async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
         method="json_mode",
     )
     prompt: str = get_transit_score_prompt(
-        zipcode=state["zip_code"], commute_result=transit_score
+        zipcode=state["zip_code"], commute_result=transit_score,
     )
     usage = None
 
@@ -61,7 +61,7 @@ async def node_commute_score(state: GeoScoutState) -> GeoScoutState:
         {
             "transit_summary": structured.transit_summary,
             "usage_metadata": updated_token_usage,
-        }
+        },
     )
     return state
 
@@ -92,7 +92,7 @@ async def node_crime_rate(state: GeoScoutState) -> GeoScoutState:
             "crime_summary": structured.crime_summary,
             "crime_score": structured.crime_score,
             "usage_metadata": updated_token_usage,
-        }
+        },
     )
     return state
 
@@ -123,7 +123,7 @@ async def node_school_rate(state: GeoScoutState) -> GeoScoutState:
             "school_summary": structured.school_summary,
             "school_score": structured.school_score,
             "usage_metadata": updated_token_usage,
-        }
+        },
     )
     return state
 
@@ -141,6 +141,6 @@ async def node_synthesizer(state: GeoScoutState) -> GeoScoutState:
         {
             "total_summary": response.content,
             "usage_metadata": updated_token_usage,
-        }
+        },
     )
     return state

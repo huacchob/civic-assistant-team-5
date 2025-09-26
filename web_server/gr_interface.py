@@ -22,13 +22,12 @@ def format_planner_results(result: Any) -> Any:
     analysis: Any = result.get("final_analysis", "No analysis available")
     if analysis and analysis != "No analysis available":
         return analysis
-    else:
-        return "Analysis unavailable - please try again."
+    return "Analysis unavailable - please try again."
 
 
 # Chatbot function that uses analysis context
 async def chatbot_response(
-    message: str, history: list[tuple[str, str]], analysis_context: Any
+    message: str, history: list[tuple[str, str]], analysis_context: Any,
 ):
     """Generate chatbot response using the analysis context"""
     if not analysis_context or analysis_context == "No analysis available":
@@ -60,7 +59,7 @@ Please answer their questions about this analysis, provide clarifications, or he
         return response.content
 
     except Exception as e:
-        return f"I'm sorry, I encountered an error: {str(e)}. Please try again."
+        return f"I'm sorry, I encountered an error: {e!s}. Please try again."
 
 
 async def run_planner_with_ui(
@@ -132,11 +131,11 @@ async def run_planner_with_ui(
         import traceback
 
         traceback.print_exc()
-        return f"Error: {str(e)}"
+        return f"Error: {e!s}"
 
 
 def handle_chatbot(
-    message: str, history: list[dict[str, str]]
+    message: str, history: list[dict[str, str]],
 ) -> tuple[list[dict[str, str]], Literal[""]]:
     """Handle chatbot interactions with analysis context"""
     global analysis_context
@@ -150,7 +149,7 @@ def handle_chatbot(
             {
                 "role": "assistant",
                 "content": "I don't have access to your analysis results yet. Please run the analysis first.",
-            }
+            },
         )
         return history, ""
 
@@ -175,17 +174,17 @@ def handle_chatbot(
                 message=message,
                 history=old_format_history,
                 analysis_context=analysis_context,
-            )
+            ),
         )
         history.append({"role": "assistant", "content": response})
     except Exception as e:
-        history.append({"role": "assistant", "content": f"Error: {str(e)}"})
+        history.append({"role": "assistant", "content": f"Error: {e!s}"})
 
     return history, ""
 
 
 def create_interface() -> gr.Blocks:
-    with open(file=local_dir / "css.txt", mode="r", encoding="utf-8") as f:
+    with open(file=local_dir / "css.txt", encoding="utf-8") as f:
         custom_css: str = f.read()
     with gr.Blocks(
         title="MAREA",
@@ -193,13 +192,13 @@ def create_interface() -> gr.Blocks:
         css=custom_css,
     ) as demo:
         gr.Markdown(
-            value="# <div style='display: inline-flex; align-items: baseline;'><svg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg' style='display: inline; vertical-align: text-bottom; margin-right: 8px;'><path d='M10 0C4.477 0 0 4.477 0 10 0 14.418 2.865 18.167 6.839 19.489c.5.092.661-.217.661-.482v-1.862c-2.785.606-3.361-1.18-3.361-1.18-.455-1.156-1.111-1.463-1.111-1.463-.908-.62.069-.608.069-.608 1.005.07 1.533 1.031 1.533 1.031.892 1.529 2.341 1.087 2.91.831.089-.646.35-1.087.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.293 2.747-1.025 2.747-1.025.546 1.379.203 2.398.1 2.647.64.699 1.025 1.591 1.025 2.683 0 3.842-2.339 4.687-4.566 4.943.358.309.683.919.683 1.856v2.75c0 .266.18.572.681.475C17.138 18.167 20 14.418 20 10c0-5.523-4.477-10-10-10z' fill='#6B7280'/></svg>MAREA</div>"
+            value="# <div style='display: inline-flex; align-items: baseline;'><svg width='20' height='20' viewBox='0 0 20 20' fill='none' xmlns='http://www.w3.org/2000/svg' style='display: inline; vertical-align: text-bottom; margin-right: 8px;'><path d='M10 0C4.477 0 0 4.477 0 10 0 14.418 2.865 18.167 6.839 19.489c.5.092.661-.217.661-.482v-1.862c-2.785.606-3.361-1.18-3.361-1.18-.455-1.156-1.111-1.463-1.111-1.463-.908-.62.069-.608.069-.608 1.005.07 1.533 1.031 1.533 1.031.892 1.529 2.341 1.087 2.91.831.089-.646.35-1.087.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.092.39-1.984 1.03-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.564 9.564 0 0110 4.844c.85.004 1.705.115 2.504.337 1.909-1.293 2.747-1.025 2.747-1.025.546 1.379.203 2.398.1 2.647.64.699 1.025 1.591 1.025 2.683 0 3.842-2.339 4.687-4.566 4.943.358.309.683.919.683 1.856v2.75c0 .266.18.572.681.475C17.138 18.167 20 14.418 20 10c0-5.523-4.477-10-10-10z' fill='#6B7280'/></svg>MAREA</div>",
         )
         gr.Markdown(
-            value="<hr style='border: none; border-top: 1px solid #6B7280; margin: 3px 0 2px 0; width: 40%;'>"
+            value="<hr style='border: none; border-top: 1px solid #6B7280; margin: 3px 0 2px 0; width: 40%;'>",
         )
         gr.Markdown(
-            value="<span style='color: #6B7280;'>Secure Your Dream Home, Powered by AI.</span>"
+            value="<span style='color: #6B7280;'>Secure Your Dream Home, Powered by AI.</span>",
         )
 
         # Create tabs
@@ -215,7 +214,7 @@ def create_interface() -> gr.Blocks:
                             step=1000,
                         )
                         current_debt = gr.Number(
-                            label="Current Debt ($)", value=0, minimum=0, step=1000
+                            label="Current Debt ($)", value=0, minimum=0, step=1000,
                         )
                         credit_score = gr.Number(
                             label="Credit Score",
@@ -354,7 +353,7 @@ def create_interface() -> gr.Blocks:
 
             with gr.Tab(label="Chat"):
                 chatbot: gr.Chatbot = gr.Chatbot(
-                    label="Chat with Assistant", height=400, type="messages"
+                    label="Chat with Assistant", height=400, type="messages",
                 )
                 chatbot_input: gr.Textbox = gr.Textbox(
                     label="Your question",
@@ -364,7 +363,6 @@ def create_interface() -> gr.Blocks:
                 chatbot_send: gr.Button = gr.Button(value="Send", variant="primary")
 
                 # Connect chatbot send button
-                # RemotePdb(host="localhost", port=4444).set_trace()
                 chatbot_send.click(
                     fn=handle_chatbot,
                     inputs=[chatbot_input, chatbot],

@@ -8,27 +8,27 @@ from pydantic import BaseModel, Field
 class CommuteStructure(BaseModel):
     transit_score: int = Field(description="The transit score for the area")
     transit_summary: str = Field(
-        description="A summary of the transit situation in the area"
+        description="A summary of the transit situation in the area",
     )
 
 
 class CrimeStructure(BaseModel):
     crime_score: int = Field(description="The crime score for the area")
     crime_summary: str = Field(
-        description="A summary of the crime situation in the area"
+        description="A summary of the crime situation in the area",
     )
 
 
 class SchoolStructure(BaseModel):
     school_score: int = Field(
-        description="The score of the school district for the area"
+        description="The score of the school district for the area",
     )
     exam_scores: int = Field(description="The exam scores for the school district")
     graduation_percentage: float = Field(
-        description="The graduation percentage for the school district"
+        description="The graduation percentage for the school district",
     )
     school_summary: str = Field(
-        description="A summary of the school district in the area"
+        description="A summary of the school district in the area",
     )
 
 

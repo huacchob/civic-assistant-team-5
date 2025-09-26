@@ -2,7 +2,7 @@ from typing import Any
 
 
 def token_usage_tracking(
-    token_history: dict[str, Any], usage_data: dict[str, Any]
+    token_history: dict[str, Any], usage_data: dict[str, Any],
 ) -> dict[str, Any] | Any:
     """Track and accumulate token usage over multiple calls.
 
@@ -18,7 +18,7 @@ def token_usage_tracking(
         return token_history
 
     if token_history.get("input_token_details") and usage_data.get(
-        "input_token_details"
+        "input_token_details",
     ):
         if token_history["input_token_details"].get("audio") and usage_data[
             "input_token_details"
@@ -27,7 +27,7 @@ def token_usage_tracking(
                 "input_token_details"
             ]["audio"]
         if token_history["input_token_details"].get("cache_read") and usage_data.get(
-            "input_token_details"
+            "input_token_details",
         ).get("cache_read"):
             token_history["input_token_details"]["cache_read"] += usage_data[
                 "input_token_details"
@@ -35,16 +35,16 @@ def token_usage_tracking(
     if token_history.get("input_tokens") and usage_data.get("input_tokens"):
         token_history["input_tokens"] += usage_data["input_tokens"]
     if token_history.get("output_token_details") and usage_data.get(
-        "output_token_details"
+        "output_token_details",
     ):
         if token_history["output_token_details"].get("audio") and usage_data.get(
-            "output_token_details"
+            "output_token_details",
         ).get("audio"):
             token_history["output_token_details"]["audio"] += usage_data[
                 "output_token_details"
             ]["audio"]
         if token_history["output_token_details"].get("reasoning") and usage_data.get(
-            "output_token_details"
+            "output_token_details",
         ).get("reasoning"):
             token_history["output_token_details"]["reasoning"] += usage_data[
                 "output_token_details"

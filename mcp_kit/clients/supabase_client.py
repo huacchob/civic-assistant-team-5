@@ -56,7 +56,7 @@ class SupabaseClient:
         read_stream, write_stream = await self._stdio_context.__aenter__()
 
         self._session_context = ClientSession(
-            read_stream=read_stream, write_stream=write_stream
+            read_stream=read_stream, write_stream=write_stream,
         )
         self.session: ClientSession = await self._session_context.__aenter__()
 
@@ -71,7 +71,7 @@ class SupabaseClient:
         try:
             if self._session_context:
                 await self._session_context.__aexit__(
-                    exc_type=None, exc_val=None, exc_tb=None
+                    exc_type=None, exc_val=None, exc_tb=None,
                 )
         except (Exception, asyncio.CancelledError):
             pass  # Ignore cleanup errors
@@ -79,7 +79,7 @@ class SupabaseClient:
         try:
             if self._stdio_context:
                 await self._stdio_context.__aexit__(
-                    typ=None, value=None, traceback=None
+                    typ=None, value=None, traceback=None,
                 )
         except (Exception, asyncio.CancelledError):
             pass  # Ignore cleanup errors
@@ -106,14 +106,14 @@ class SupabaseClient:
         )
 
         result: CallToolResult = await self.session.call_tool(
-            name="execute_sql", arguments={"query": query}
+            name="execute_sql", arguments={"query": query},
         )
 
         # Parse and return clean data
         return self._parse_property_data(result=result)
 
     async def query_price_data_by_zip_and_units(
-        self, zip_code: str, residential_units: int
+        self, zip_code: str, residential_units: int,
     ) -> dict[str, Any]:
         """Query comprehensive price data by zip code and residential units"""
         if not self.session:
@@ -135,7 +135,7 @@ class SupabaseClient:
         """
 
         result: CallToolResult = await self.session.call_tool(
-            name="execute_sql", arguments={"query": query}
+            name="execute_sql", arguments={"query": query},
         )
 
         # Parse and return clean data
@@ -167,7 +167,7 @@ class SupabaseClient:
 
         # Execute the query
         result: CallToolResult = await self.session.call_tool(
-            name="execute_sql", arguments={"query": query_sql}
+            name="execute_sql", arguments={"query": query_sql},
         )
 
         # Parse and return clean data
@@ -229,9 +229,9 @@ class SupabaseClient:
                             "source": program.get("source", ""),
                             "similarity_score": 1
                             - float(
-                                program.get("distance", 1)
+                                program.get("distance", 1),
                             ),  # Convert distance to similarity
-                        }
+                        },
                     )
 
             return {"programs": programs, "total_found": len(programs)}
@@ -245,7 +245,7 @@ class SupabaseClient:
         ) as e:
             logger.info(f"DEBUG: Program RAG search parsing failed with error: {e}")
             logger.info(f"DEBUG: Content text: {content_text[:200]}...")
-            return {"error": f"Failed to parse results: {str(e)}"}
+            return {"error": f"Failed to parse results: {e!s}"}
 
     def _parse_property_data(self, result: CallToolResult) -> Any:
         """Parse MCP result and return clean property data"""
@@ -358,17 +358,17 @@ class SupabaseClient:
                 "zip_code": data.get("zip_code"),
                 "residential_units": data.get("residential_units"),
                 "average_sale_price": round(
-                    number=float(data.get("average_sale_price", 0)), ndigits=2
+                    number=float(data.get("average_sale_price", 0)), ndigits=2,
                 )
                 if data.get("average_sale_price")
                 else 0,
                 "min_sale_price": round(
-                    number=float(data.get("min_sale_price", 0)), ndigits=2
+                    number=float(data.get("min_sale_price", 0)), ndigits=2,
                 )
                 if data.get("min_sale_price")
                 else 0,
                 "max_sale_price": round(
-                    number=float(data.get("max_sale_price", 0)), ndigits=2
+                    number=float(data.get("max_sale_price", 0)), ndigits=2,
                 )
                 if data.get("max_sale_price")
                 else 0,

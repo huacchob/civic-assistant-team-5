@@ -122,21 +122,21 @@ async def run_nodes(state: PlannerState) -> PlannerState:
             "max_loan": budget_state.get("max_loan"),
             "price_data": budget_state.get("price_data"),
             "property_data": budget_state.get("property_data"),
-        }
+        },
     )
 
     # Geoscout state updates
     state.update(
         {
             "geoscout_agent_results": geoscout_state,
-        }
+        },
     )
 
     # Program state updates
     state.update(
         {
             "program_agent_results": program_state,
-        }
+        },
     )
     budget_token = budget_state.get("usage_metadata", {})
     program_token = program_state.get("usage_metadata", {})
@@ -188,7 +188,7 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
             logger.info("   LLM analysis completed")
         except Exception as e:
             logger.info(f"   LLM analysis failed: {e}")
-            analysis = f"Analysis unavailable due to error: {str(e)}"
+            analysis = f"Analysis unavailable due to error: {e!s}"
     else:
         analysis = "No budgeting results available for analysis."
 
@@ -196,7 +196,7 @@ async def synthesis_node(state: PlannerState) -> PlannerState:
     state["usage_metadata"] = updated_token_usage
     state["current_step"] = "synthesis_complete"
     logger.info(
-        f"Total token usage for all agents and synthesis: {state['usage_metadata']}"
+        f"Total token usage for all agents and synthesis: {state['usage_metadata']}",
     )
     logger.info("Workflow complete.")
 

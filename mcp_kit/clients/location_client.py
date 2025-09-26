@@ -54,7 +54,7 @@ class LocationClient:
         read_stream, write_stream = await self._stdio_context.__aenter__()
 
         self._session_context = ClientSession(
-            read_stream=read_stream, write_stream=write_stream
+            read_stream=read_stream, write_stream=write_stream,
         )
         self.session: ClientSession = await self._session_context.__aenter__()
 
@@ -69,7 +69,7 @@ class LocationClient:
         try:
             if self._session_context:
                 await self._session_context.__aexit__(
-                    exc_type=None, exc_val=None, exc_tb=None
+                    exc_type=None, exc_val=None, exc_tb=None,
                 )
         except (Exception, asyncio.CancelledError):
             pass  # Ignore cleanup errors
@@ -77,7 +77,7 @@ class LocationClient:
         try:
             if self._stdio_context:
                 await self._stdio_context.__aexit__(
-                    typ=None, value=None, traceback=None
+                    typ=None, value=None, traceback=None,
                 )
         except (Exception, asyncio.CancelledError):
             pass  # Ignore cleanup errors
@@ -99,12 +99,12 @@ class LocationClient:
         if not self.session:
             raise RuntimeError("Not connected. Call connect() first.")
         result: CallToolResult = await self.session.call_tool(
-            name="get_transit_score", arguments={"zip_code": zip_code}
+            name="get_transit_score", arguments={"zip_code": zip_code},
         )
         return self._parse_location_data(result=result, data_type="transit_score")
 
     def _parse_location_data(
-        self, result: CallToolResult, data_type: str
+        self, result: CallToolResult, data_type: str,
     ) -> dict[str, Any]:
         """Parse MCP result and return clean location data"""
         if not result or not hasattr(result, "content") or not result.content:

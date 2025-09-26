@@ -8,10 +8,10 @@ def get_comprehensive_analysis_prompt(state: dict) -> str:
     # Extract all values from planner state
     budgeting_results: dict[str, Any] = state.get("budgeting_agent_results", {})
     program_results: str = state.get("program_agent_results", {}).get(
-        "filtered_programs", None
+        "filtered_programs", None,
     )
     geoscout_results: str = state.get("geoscout_agent_results", {}).get(
-        "total_summary", None
+        "total_summary", None,
     )
     price_data: dict[str, Any] = state.get("price_data", {})
 

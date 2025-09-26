@@ -14,7 +14,7 @@ from agents.budgeting_agent.state import BudgetingState
 
 
 def initialize_graph() -> StateGraph[
-    BudgetingState, None, BudgetingState, BudgetingState
+    BudgetingState, None, BudgetingState, BudgetingState,
 ]:
     """Initialize the budgeting agent graph with model and tools."""
     graph: StateGraph[BudgetingState, None, BudgetingState, BudgetingState] = (
@@ -36,7 +36,7 @@ def initialize_graph() -> StateGraph[
 
 
 def compile_graph() -> CompiledStateGraph[
-    BudgetingState, None, BudgetingState, BudgetingState
+    BudgetingState, None, BudgetingState, BudgetingState,
 ]:
     """Compile the graph into a runnable agent"""
     graph: StateGraph[BudgetingState, None, BudgetingState, BudgetingState] = (
@@ -50,7 +50,7 @@ async def run_budgeting_agent(user_data: dict[str, Any]) -> dict[str, Any] | Any
     # Convert user_data to initial state
     initial_state: dict[str, Any] = {
         "income": user_data["income"],
-        "target_home_id": user_data.get("target_home_id", None),
+        "target_home_id": user_data.get("target_home_id"),
         "credit_score": user_data["credit_score"],
         "zip_code": user_data["zip_code"],
         "residential_units": user_data["residential_units"],

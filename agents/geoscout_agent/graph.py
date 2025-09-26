@@ -35,7 +35,7 @@ def initialize_graph() -> GeoScoutState:
 
 
 def compile_graph() -> CompiledStateGraph[
-    GeoScoutState, None, GeoScoutState, GeoScoutState
+    GeoScoutState, None, GeoScoutState, GeoScoutState,
 ]:
     """Compile the graph into a runnable agent"""
     graph: GeoScoutState = initialize_graph()
@@ -49,7 +49,7 @@ async def run_geoscout_agent(user_data: dict[Any, Any]) -> dict[str, Any] | Any:
         "current_step": "start",
         "step_count": 0,
         "error_count": 0,
-        "zip_code": user_data.get("zip_code", None),
+        "zip_code": user_data.get("zip_code"),
         "transit_score": 0,
         "transit_summary": "",
         "crime_summary": "",

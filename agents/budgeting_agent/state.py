@@ -1,6 +1,6 @@
 """State for the Budgeting Agent workflow."""
 
-from typing import Any, Dict, Optional
+from typing import Any
 
 from typing_extensions import TypedDict
 
@@ -9,20 +9,20 @@ class BudgetingState(TypedDict):
     """State definition for the Budgeting Agent workflow."""
 
     # User input data
-    income: Optional[float]
-    target_home_id: Optional[int]
-    credit_score: Optional[int]
-    zip_code: Optional[str]
-    residential_units: Optional[int]
+    income: float | None
+    target_home_id: int | None
+    credit_score: int | None
+    zip_code: str | None
+    residential_units: int | None
 
     # Tool results
-    budget_result: Optional[Dict[str, Any]]
-    loan_result: Optional[Dict[str, Any]]
-    price_data: Optional[Dict[str, Any]]
+    budget_result: dict[str, Any] | None
+    loan_result: dict[str, Any] | None
+    price_data: dict[str, Any] | None
 
     # Extracted values for easy access
-    monthly_budget: Optional[float]
-    max_loan: Optional[float]
+    monthly_budget: float | None
+    max_loan: float | None
 
     # Usage metadata
-    usage_metadata: Optional[dict[str, Any]]
+    usage_metadata: dict[str, Any] | None

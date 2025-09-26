@@ -31,7 +31,7 @@ app = FastAPI(title="MAREA API", lifespan=lifespan)
 # API endpoint for external access
 @app.post(path="/analyze")
 async def analyze_endpoint(
-    income: float, credit_score: int, zip_code: str
+    income: float, credit_score: int, zip_code: str,
 ) -> dict[str, str]:
     try:
         user_data: dict[str, Any] = {

@@ -1,37 +1,37 @@
 """State for the Planner Agent workflow."""
 
-from typing import Any, Optional
+from typing import Any
 
 from typing_extensions import TypedDict
 
 
 class PlannerState(TypedDict):
     # User input data (from frontend)
-    income: Optional[float]
-    state: Optional[str]  # State selection
-    credit_score: Optional[int]
-    zip_code: Optional[str]
-    residential_units: Optional[int]
-    current_debt: Optional[float]
-    building_class: Optional[str]
-    who_i_am: Optional[list]  # User identity/status selections
-    what_looking_for: Optional[list]  # What they're looking for selections s
+    income: float | None
+    state: str | None  # State selection
+    credit_score: int | None
+    zip_code: str | None
+    residential_units: int | None
+    current_debt: float | None
+    building_class: str | None
+    who_i_am: list | None  # User identity/status selections
+    what_looking_for: list | None  # What they're looking for selections s
 
     # Program state
-    program_agent_results: Optional[dict[str, Any]]
+    program_agent_results: dict[str, Any] | None
 
     # Geoscout agent
-    geoscout_agent_results: Optional[dict[str, Any]]
+    geoscout_agent_results: dict[str, Any] | None
 
     # Budgeting agent
-    price_data: Optional[dict[str, Any]]  # Market pricing data (avg, min, max, etc.)
-    property_data: Optional[dict[str, Any]]  # Results from home_id query
-    monthly_budget: Optional[float]
-    max_loan: Optional[float]
-    budgeting_agent_results: Optional[dict[str, Any]]
+    price_data: dict[str, Any] | None  # Market pricing data (avg, min, max, etc.)
+    property_data: dict[str, Any] | None  # Results from home_id query
+    monthly_budget: float | None
+    max_loan: float | None
+    budgeting_agent_results: dict[str, Any] | None
 
     # Planner-specific outputs
-    final_analysis: Optional[str]  # Comprehensive synthesis
+    final_analysis: str | None  # Comprehensive synthesis
 
     # Usage metadata
-    usage_metadata: Optional[dict[str, Any]]
+    usage_metadata: dict[str, Any] | None

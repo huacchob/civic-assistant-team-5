@@ -52,7 +52,7 @@ async def rag_search_programs_node(state: ProgramAgentState) -> ProgramAgentStat
 
         # Call RAG search tool with the embedding
         rag_result = await search_programs_rag.ainvoke(
-            input={"embedding": query_embedding, "limit": 10}
+            input={"embedding": query_embedding, "limit": 10},
         )
 
         if "error" in rag_result:
@@ -92,12 +92,12 @@ async def filter_programs_node(state: ProgramAgentState) -> ProgramAgentState:
         [
             f"Program {i + 1}:\n{format_program_summary(program=program)}"
             for i, program in enumerate(programs)
-        ]
+        ],
     )
 
     # Create batch prompt using prompt function
     batch_prompt: str = create_batch_eligibility_prompt(
-        user_profile=user_profile, programs_text=programs_text
+        user_profile=user_profile, programs_text=programs_text,
     )
 
     try:

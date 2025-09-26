@@ -1,6 +1,6 @@
 """State for the GeoScout agent workflow."""
 
-from typing import Any, Optional
+from typing import Any
 
 from typing_extensions import TypedDict
 
@@ -12,7 +12,7 @@ class GeoScoutState(TypedDict):
     error_count: int
 
     # User input data
-    zip_code: Optional[str]
+    zip_code: str | None
 
     # Transit node output
     transit_score: int
@@ -32,4 +32,4 @@ class GeoScoutState(TypedDict):
     total_summary: str
 
     # Usage metadata
-    usage_metadata: Optional[dict[str, Any]]
+    usage_metadata: dict[str, Any] | None

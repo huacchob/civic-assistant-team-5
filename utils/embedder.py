@@ -9,6 +9,7 @@ for use with pgvector in Supabase.
 import csv
 import json
 import os
+from pathlib import Path
 from typing import Any
 
 import openai
@@ -26,7 +27,7 @@ class NYProgramsEmbedder:
         self.api_key: str = os.getenv(key="OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "OpenAI API key not found. Set OPENAI_API_KEY environment variable."
+                "OpenAI API key not found. Set OPENAI_API_KEY environment variable.",
             )
 
         openai.api_key = self.api_key
@@ -53,10 +54,10 @@ Benefit: """
         return embedding_query_string
 
     def generate_embedding(self, text: str) -> list[float]:
-        """Generate embedding for the given text."""
+        """Generate and return the embedding for the given text."""
         try:
             response: CreateEmbeddingResponse = openai.embeddings.create(
-                model=self.embedding_model, input=text
+                model=self.embedding_model, input=text,
             )
             return response.data[0].embedding
         except Exception as e:
@@ -65,9 +66,9 @@ Benefit: """
 
     def load_programs(self, json_file_path: str) -> list[dict[str, Any]]:
         """Load programs from JSON file."""
-        if not os.path.exists(json_file_path):
+        if not Path(json_file_path).exists():
             raise FileNotFoundError(f"File not found: {json_file_path}")
-        with open(file=json_file_path, mode="r", encoding="utf-8") as f:
+        with open(file=json_file_path, encoding="utf-8") as f:
             return json.load(f)
 
     def process_programs(self, programs: list[dict[str, Any]]) -> list[dict[str, Any]]:
@@ -106,7 +107,7 @@ Benefit: """
         return processed_programs
 
     def save_to_csv(
-        self, processed_programs: list[dict[str, Any]], output_file: str
+        self, processed_programs: list[dict[str, Any]], output_file: str,
     ) -> None:
         """Save processed programs to CSV file."""
         with open(file=output_file, mode="w", newline="", encoding="utf-8") as f:
@@ -124,7 +125,7 @@ Benefit: """
                     "max_benefit",
                     "eligibility",
                     "source",
-                ]
+                ],
             )
 
             # Write data
@@ -141,13 +142,13 @@ Benefit: """
                         original.get("Max Benefit", ""),
                         original.get("Eligibility", ""),
                         original.get("Source", ""),
-                    ]
+                    ],
                 )
 
         print(f"Saved {len(processed_programs)} programs to {output_file}")
 
     def save_embeddings_only(
-        self, processed_programs: list[dict[str, Any]], output_file: str
+        self, processed_programs: list[dict[str, Any]], output_file: str,
     ) -> None:
         """Save just the embeddings in a format suitable for pgvector."""
         with open(file=output_file, mode="w", newline="", encoding="utf-8") as f:
@@ -159,7 +160,7 @@ Benefit: """
             # Write data
             for program in processed_programs:
                 writer.writerow(
-                    row=[program["program_id"], json.dumps(program["embedding_vector"])]
+                    row=[program["program_id"], json.dumps(program["embedding_vector"])],
                 )
 
         print(f"Saved embeddings to {output_file}")

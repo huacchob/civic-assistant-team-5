@@ -14,7 +14,7 @@ from agents.planner_agent.state import PlannerState
 
 def initialize_graph() -> StateGraph:
     graph: StateGraph[PlannerState, None, PlannerState, PlannerState] = StateGraph(
-        state_schema=PlannerState
+        state_schema=PlannerState,
     )
     graph.add_node(node="run_nodes", action=run_nodes)
     graph.add_node(node="synthesis", action=synthesis_node)
@@ -26,7 +26,7 @@ def initialize_graph() -> StateGraph:
 
 
 def compile_graph() -> CompiledStateGraph[
-    PlannerState, None, PlannerState, PlannerState
+    PlannerState, None, PlannerState, PlannerState,
 ]:
     """Compile the graph into a runnable agent"""
     graph: StateGraph[PlannerState, None, PlannerState, PlannerState] = (

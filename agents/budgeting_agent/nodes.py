@@ -19,7 +19,7 @@ async def budget_calculation_node(state: BudgetingState) -> BudgetingState:
 
     # Call the tool directly to get the budget (async)
     budget_result: Any = await calculate_budget.ainvoke(
-        input={"income": state["income"]}
+        input={"income": state["income"]},
     )
     logger.info(f"Budget calculation result: {budget_result}")
 
@@ -35,7 +35,7 @@ async def loan_qualification_node(state: BudgetingState) -> BudgetingState:
 
     # Call the loan qualification tool
     loan_result: Any = await loan_qualification.ainvoke(
-        input={"income": state["income"], "credit_score": state["credit_score"]}
+        input={"income": state["income"], "credit_score": state["credit_score"]},
     )
     logger.info(f"Loan qualification result: {loan_result}")
 
@@ -54,7 +54,7 @@ async def price_data_query_node(state: BudgetingState) -> BudgetingState:
         input={
             "zip_code": state["zip_code"],
             "residential_units": state["residential_units"],
-        }
+        },
     )
     logger.info(f"Price data query result: {price_data_result}")
 

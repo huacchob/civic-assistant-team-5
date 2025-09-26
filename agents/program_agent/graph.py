@@ -28,7 +28,7 @@ def initialize_graph() -> StateGraph:
 
 
 def compile_graph() -> CompiledStateGraph[
-    ProgramAgentState, None, ProgramAgentState, ProgramAgentState
+    ProgramAgentState, None, ProgramAgentState, ProgramAgentState,
 ]:
     """Compile the graph into a runnable agent"""
     graph: StateGraph[ProgramAgentState, None, ProgramAgentState, ProgramAgentState] = (
@@ -57,7 +57,7 @@ async def run_program_agent(user_data) -> Any:
 
     # Create and run the graph
     agent: CompiledStateGraph[
-        ProgramAgentState, None, ProgramAgentState, ProgramAgentState
+        ProgramAgentState, None, ProgramAgentState, ProgramAgentState,
     ] = compile_graph()
     result: Any = await agent.ainvoke(input=initial_state)
 

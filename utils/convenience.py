@@ -35,7 +35,7 @@ def load_secrets() -> None:
     if not creds_file.exists():
         print("No .env file found.")
         return
-    with open(file=creds_file, mode="r", encoding="utf-8") as file:
+    with open(file=creds_file, encoding="utf-8") as file:
         lines: list[str] = file.readlines()
         for line in lines:
             if "=" not in line:

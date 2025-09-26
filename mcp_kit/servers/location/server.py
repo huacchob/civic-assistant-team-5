@@ -28,8 +28,7 @@ def _get_zip_coordinates(zip_code: str) -> tuple[float, float]:
             lat = float(place["latitude"])
             lon = float(place["longitude"])
             return (lat, lon)
-        else:
-            raise ValueError(f"ZIP code {zip_code} not found")
+        raise ValueError(f"ZIP code {zip_code} not found")
 
     except Exception:
         # Fallback to default coordinates if API fails
@@ -82,22 +81,21 @@ def get_transit_score(zip_code: str) -> dict[str, Any]:
                 "lon": lon,
                 "status": "success",
             }
-        else:
-            return {
-                "error": "No transit score found for this location",
-                "status": "error",
-                "zip_code": zip_code,
-            }
+        return {
+            "error": "No transit score found for this location",
+            "status": "error",
+            "zip_code": zip_code,
+        }
 
     except httpx.RequestError as e:
         return {
-            "error": f"Transit API request failed: {str(e)}",
+            "error": f"Transit API request failed: {e!s}",
             "status": "error",
             "zip_code": zip_code,
         }
     except Exception as e:
         return {
-            "error": f"Unexpected error: {str(e)}",
+            "error": f"Unexpected error: {e!s}",
             "status": "error",
             "zip_code": zip_code,
         }

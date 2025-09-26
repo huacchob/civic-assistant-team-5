@@ -22,7 +22,7 @@ class VectorSearchTester:
         self.api_key = openai_api_key or os.getenv("OPENAI_API_KEY")
         if not self.api_key:
             raise ValueError(
-                "OpenAI API key not found. Set OPENAI_API_KEY environment variable."
+                "OpenAI API key not found. Set OPENAI_API_KEY environment variable.",
             )
 
         openai.api_key = self.api_key
@@ -41,7 +41,7 @@ Benefit: """
 
         try:
             response = openai.embeddings.create(
-                model=self.embedding_model, input=formatted_query
+                model=self.embedding_model, input=formatted_query,
             )
             return response.data[0].embedding
         except Exception as e:
