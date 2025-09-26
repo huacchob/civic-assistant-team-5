@@ -55,7 +55,7 @@ def get_comprehensive_analysis_prompt(state: dict) -> str:
 
     prompt += """
 
-    Please provide a concise analysis (max 500 words) that includes:
+    Please provide a concise analysis (max 500 words make the format render professionally in markdown) that includes:
 
     1. FINANCIAL SUMMARY: Key metrics clearly (take into consideration current debt)
     2. NEIGHBORHOOD: Provide context of neighborhood, transit, crime, and school district data
@@ -66,6 +66,11 @@ def get_comprehensive_analysis_prompt(state: dict) -> str:
     6. NEXT STEPS: Clear action items including program application links
 
     Keep it practical, actionable, and concise. Use bullet points where helpful.
+    """
+
+    prompt += f"""
+    Include the total token usage and cost at the end of your output. You can grab the information from {state["usage_metadata"]}.
+    Make it very concise as a footnote style.
     """
 
     return prompt
